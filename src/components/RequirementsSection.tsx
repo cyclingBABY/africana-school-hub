@@ -1,12 +1,21 @@
+import { useState } from "react";
 import { Book, Shirt as ClothingIcon, BedDouble, Sparkles, Package } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import AnimatedSection from "./AnimatedSection";
+import reqReligious from "@/assets/req-religious.jpg";
+import reqClothing from "@/assets/req-clothing.jpg";
+import reqBedding from "@/assets/req-bedding.jpg";
+import reqHygiene from "@/assets/req-hygiene.jpg";
+import reqEssentials from "@/assets/req-essentials.jpg";
 
 const RequirementsSection = () => {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
   const categories = [
     {
       icon: Book,
       title: "Religious Texts",
+      image: reqReligious,
       items: [
         "Quran (for Muslim students)",
         "Holy Bible (for Christian students)",
@@ -15,6 +24,7 @@ const RequirementsSection = () => {
     {
       icon: ClothingIcon,
       title: "Clothing",
+      image: reqClothing,
       items: [
         "Black Sharia (girls)",
         "White Kanzu (boys)",
@@ -25,6 +35,7 @@ const RequirementsSection = () => {
     {
       icon: BedDouble,
       title: "Bedding",
+      image: reqBedding,
       items: [
         "Mattress",
         "Suitcase",
@@ -36,6 +47,7 @@ const RequirementsSection = () => {
     {
       icon: Sparkles,
       title: "Hygiene Items",
+      image: reqHygiene,
       items: [
         "2 bottles of Jik (girls)",
         "3 packets of sanitary pads",
@@ -47,6 +59,7 @@ const RequirementsSection = () => {
     {
       icon: Package,
       title: "Other Essentials",
+      image: reqEssentials,
       items: [
         "Eating utensils (plate, cup, spoon)",
         "At least 4kg of sugar",
@@ -76,7 +89,30 @@ const RequirementsSection = () => {
               animation={index % 3 === 0 ? 'fade-left' : index % 3 === 1 ? 'fade-up' : 'fade-right'}
               delay={index * 100}
             >
-              <Card className="hover:shadow-lg transition-all hover-lift h-full">
+              <Card 
+                className="hover:shadow-lg transition-all hover-lift h-full relative group cursor-pointer"
+                onMouseEnter={() => setHoveredIndex(index)}
+                onMouseLeave={() => setHoveredIndex(null)}
+              >
+                {/* Hover Image Popup */}
+                <div 
+                  className={`absolute -top-48 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 pointer-events-none ${
+                    hoveredIndex === index 
+                      ? "opacity-100 scale-100 translate-y-0" 
+                      : "opacity-0 scale-95 translate-y-4"
+                  }`}
+                >
+                  <div className="relative">
+                    <img 
+                      src={category.image} 
+                      alt={category.title}
+                      className="w-44 h-44 object-cover rounded-xl shadow-2xl border-4 border-card"
+                    />
+                    {/* Arrow pointing down */}
+                    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-card rotate-45 border-r border-b border-border" />
+                  </div>
+                </div>
+
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
