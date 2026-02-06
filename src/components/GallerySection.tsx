@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { X } from "lucide-react";
+import AnimatedSection from "./AnimatedSection";
 import trip1 from "@/assets/trip-1.jpg";
 import trip2 from "@/assets/trip-2.jpg";
 import trip3 from "@/assets/trip-3.jpg";
@@ -94,7 +95,7 @@ const GallerySection = () => {
   return (
     <section id="gallery" className="py-20 bg-muted/30">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
+        <AnimatedSection className="text-center mb-12">
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">
             School Gallery
           </h2>
@@ -102,33 +103,38 @@ const GallerySection = () => {
             Take a visual tour of our campus and discover the vibrant learning environment 
             at Africana Muslim Secondary School
           </p>
-        </div>
+        </AnimatedSection>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {galleryImages.map((image, index) => (
-            <div
-              key={index}
-              className="group relative overflow-hidden rounded-xl bg-card shadow-md cursor-pointer transform transition-all duration-300 hover:scale-[1.02] hover:shadow-xl"
-              onClick={() => setSelectedImage(index)}
+            <AnimatedSection 
+              key={index} 
+              animation={index % 3 === 0 ? 'fade-left' : index % 3 === 1 ? 'fade-up' : 'fade-right'}
+              delay={index * 80}
             >
-              <div className="aspect-[4/3] overflow-hidden">
-                <img
-                  src={image.src}
-                  alt={image.alt}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="absolute bottom-0 left-0 right-0 p-4 text-primary-foreground">
-                  <h3 className="font-serif font-bold text-lg">{image.title}</h3>
-                  <p className="text-sm opacity-90">{image.description}</p>
+              <div
+                className="group relative overflow-hidden rounded-xl bg-card shadow-md cursor-pointer hover-lift image-zoom"
+                onClick={() => setSelectedImage(index)}
+              >
+                <div className="aspect-[4/3] overflow-hidden">
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="absolute bottom-0 left-0 right-0 p-4 text-primary-foreground">
+                    <h3 className="font-serif font-bold text-lg">{image.title}</h3>
+                    <p className="text-sm opacity-90">{image.description}</p>
+                  </div>
+                </div>
+                <div className="p-4">
+                  <h3 className="font-serif font-semibold text-foreground">{image.title}</h3>
+                  <p className="text-sm text-muted-foreground">{image.description}</p>
                 </div>
               </div>
-              <div className="p-4">
-                <h3 className="font-serif font-semibold text-foreground">{image.title}</h3>
-                <p className="text-sm text-muted-foreground">{image.description}</p>
-              </div>
-            </div>
+            </AnimatedSection>
           ))}
         </div>
 

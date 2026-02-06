@@ -130,6 +130,89 @@
     @apply w-24 h-1 mx-auto rounded-full;
     background: linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
   }
+
+  /* Scroll Animation Classes */
+  .animate-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+
+  .animate-on-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .animate-on-scroll-left {
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+
+  .animate-on-scroll-left.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .animate-on-scroll-right {
+    opacity: 0;
+    transform: translateX(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+
+  .animate-on-scroll-right.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .animate-scale-on-scroll {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  }
+
+  .animate-scale-on-scroll.visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* Stagger delays */
+  .stagger-1 { transition-delay: 0.1s; }
+  .stagger-2 { transition-delay: 0.2s; }
+  .stagger-3 { transition-delay: 0.3s; }
+  .stagger-4 { transition-delay: 0.4s; }
+  .stagger-5 { transition-delay: 0.5s; }
+
+  /* Hover effects */
+  .hover-lift {
+    @apply transition-all duration-300;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px -15px hsl(var(--primary) / 0.2);
+  }
+
+  .hover-glow {
+    @apply transition-all duration-300;
+  }
+
+  .hover-glow:hover {
+    box-shadow: 0 0 30px hsl(var(--accent) / 0.4);
+  }
+
+  /* Image hover effects */
+  .image-zoom {
+    @apply overflow-hidden;
+  }
+
+  .image-zoom img {
+    @apply transition-transform duration-500 ease-out;
+  }
+
+  .image-zoom:hover img {
+    transform: scale(1.1);
+  }
 }
 
 @layer utilities {

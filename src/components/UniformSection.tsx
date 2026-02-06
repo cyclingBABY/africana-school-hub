@@ -1,6 +1,7 @@
 import { Shirt } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import uniformFull from "@/assets/uniform-full.png";
+import AnimatedSection from "./AnimatedSection";
 
 const UniformSection = () => {
   const girlsItems = [
@@ -25,7 +26,7 @@ const UniformSection = () => {
   return (
     <section id="uniforms" className="py-20 bg-background">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
+        <AnimatedSection className="text-center mb-16">
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">
             Uniform Package
           </h2>
@@ -33,49 +34,54 @@ const UniformSection = () => {
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Complete uniform packages are available for both day scholars and boarding students.
           </p>
-        </div>
+        </AnimatedSection>
 
         {/* Pricing Cards */}
         <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto mb-12">
-          <Card className="text-center hover:shadow-xl transition-shadow border-2 border-secondary">
-            <CardHeader className="pb-4">
-              <CardTitle className="font-serif text-xl text-foreground">Day Students</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-4xl font-bold text-primary mb-2">UGX 225,000</div>
-              <p className="text-sm text-muted-foreground">Complete uniform set</p>
-            </CardContent>
-          </Card>
+          <AnimatedSection animation="fade-left">
+            <Card className="text-center hover:shadow-xl transition-all border-2 border-secondary hover-lift h-full">
+              <CardHeader className="pb-4">
+                <CardTitle className="font-serif text-xl text-foreground">Day Students</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-4xl font-bold text-primary mb-2">UGX 225,000</div>
+                <p className="text-sm text-muted-foreground">Complete uniform set</p>
+              </CardContent>
+            </Card>
+          </AnimatedSection>
 
-          <Card className="text-center hover:shadow-xl transition-shadow border-2 border-primary bg-primary/5">
-            <CardHeader className="pb-4">
-              <CardTitle className="font-serif text-xl text-foreground">Boarding Students</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-4xl font-bold text-primary mb-2">UGX 285,000</div>
-              <p className="text-sm text-muted-foreground">Complete uniform set + boarding attire</p>
-            </CardContent>
-          </Card>
+          <AnimatedSection animation="fade-right">
+            <Card className="text-center hover:shadow-xl transition-all border-2 border-primary bg-primary/5 hover-lift hover-glow h-full">
+              <CardHeader className="pb-4">
+                <CardTitle className="font-serif text-xl text-foreground">Boarding Students</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-4xl font-bold text-primary mb-2">UGX 285,000</div>
+                <p className="text-sm text-muted-foreground">Complete uniform set + boarding attire</p>
+              </CardContent>
+            </Card>
+          </AnimatedSection>
         </div>
 
         {/* Uniform Showcase Image */}
-        <div className="max-w-4xl mx-auto mb-12">
-          <div className="rounded-lg overflow-hidden shadow-lg bg-white">
+        <AnimatedSection animation="scale" className="max-w-4xl mx-auto mb-12">
+          <div className="rounded-lg overflow-hidden shadow-lg bg-white image-zoom">
             <img 
               src={uniformFull} 
               alt="Complete school uniform set - white polo shirts with blue trim, navy skirts and trousers, black hoodie, and beanie caps"
-              className="w-full h-auto object-contain"
+              className="w-full h-auto object-contain transition-transform duration-500"
             />
           </div>
           <p className="text-center text-muted-foreground mt-4 text-sm">
             White polo shirts with blue trim • Navy blue skirts & trousers • Black hoodie • School beanie cap
           </p>
-        </div>
+        </AnimatedSection>
 
         {/* Uniform Details */}
         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {/* Girls */}
-          <Card className="overflow-hidden">
+          <AnimatedSection animation="fade-left" delay={100}>
+            <Card className="overflow-hidden hover-lift h-full">
             <CardHeader className="bg-secondary">
               <CardTitle className="flex items-center gap-3 font-serif">
                 <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
@@ -110,9 +116,11 @@ const UniformSection = () => {
               </div>
             </CardContent>
           </Card>
+          </AnimatedSection>
 
           {/* Boys */}
-          <Card className="overflow-hidden">
+          <AnimatedSection animation="fade-right" delay={200}>
+            <Card className="overflow-hidden hover-lift h-full">
             <CardHeader className="bg-secondary">
               <CardTitle className="flex items-center gap-3 font-serif">
                 <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
@@ -147,6 +155,7 @@ const UniformSection = () => {
               </div>
             </CardContent>
           </Card>
+          </AnimatedSection>
         </div>
       </div>
     </section>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import AnimatedSection from "./AnimatedSection";
 import students1 from "@/assets/students-1.jpg";
 import students2 from "@/assets/students-2.jpg";
 import students3 from "@/assets/students-3.jpg";
@@ -56,7 +57,7 @@ const StudentsSlider = () => {
   return (
     <section className="py-16 bg-muted/30">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-10">
+        <AnimatedSection className="text-center mb-10">
           <div className="inline-flex items-center gap-2 mb-4">
             <Users className="h-8 w-8 text-primary" />
             <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground">
@@ -66,9 +67,9 @@ const StudentsSlider = () => {
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Meet the vibrant community of learners who make Africana Muslim Secondary School special
           </p>
-        </div>
+        </AnimatedSection>
 
-        <div className="relative max-w-4xl mx-auto">
+        <AnimatedSection animation="scale" className="relative max-w-4xl mx-auto">
           {/* Main Slider */}
           <div className="relative h-[450px] md:h-[600px] rounded-2xl overflow-hidden shadow-2xl bg-muted">
             {studentImages.map((image, index) => (
@@ -139,7 +140,7 @@ const StudentsSlider = () => {
               />
             ))}
           </div>
-        </div>
+        </AnimatedSection>
       </div>
     </section>
   );

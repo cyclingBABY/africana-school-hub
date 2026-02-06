@@ -1,25 +1,26 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Quote } from "lucide-react";
 import headmasterImage from "@/assets/headmaster.png";
+import AnimatedSection from "./AnimatedSection";
 
 const HeadmasterSection = () => {
   return (
     <section id="headmaster" className="py-20 bg-secondary/30">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
+        <AnimatedSection className="text-center mb-12">
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">
             Message from the Headmaster
           </h2>
           <div className="section-divider mb-6" />
-        </div>
+        </AnimatedSection>
 
-        <div className="max-w-4xl mx-auto">
-          <Card className="overflow-hidden">
+        <AnimatedSection animation="scale" className="max-w-4xl mx-auto">
+          <Card className="overflow-hidden hover-lift">
             <CardContent className="p-0">
               <div className="md:flex">
                 {/* Headmaster Photo */}
                 <div className="md:w-1/3 bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center p-6">
-                  <div className="w-48 h-64 rounded-lg overflow-hidden border-4 border-accent shadow-lg">
+                  <div className="w-48 h-64 rounded-lg overflow-hidden border-4 border-accent shadow-lg transition-transform duration-500 hover:scale-105">
                     <img 
                       src={headmasterImage} 
                       alt="Headmaster of Africana Muslim Secondary School"
@@ -64,7 +65,7 @@ const HeadmasterSection = () => {
               </div>
             </CardContent>
           </Card>
-        </div>
+        </AnimatedSection>
       </div>
     </section>
   );
