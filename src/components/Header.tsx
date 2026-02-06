@@ -1,4 +1,5 @@
-import { Menu, X, Phone, Mail } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Menu, X, Phone, Mail, UserCog } from "lucide-react";
 import { useState } from "react";
 
 const Header = () => {
@@ -47,7 +48,7 @@ const Header = () => {
           </a>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-6">
             {navLinks.map((link) => (
               <a
                 key={link.href}
@@ -57,6 +58,13 @@ const Header = () => {
                 {link.label}
               </a>
             ))}
+            <Link
+              to="/auth"
+              className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:opacity-90 transition-all text-sm font-medium"
+            >
+              <UserCog className="w-4 h-4" />
+              Staff Login
+            </Link>
           </div>
 
           {/* Mobile menu button */}
