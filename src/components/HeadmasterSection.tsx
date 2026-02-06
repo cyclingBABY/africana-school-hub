@@ -1,0 +1,68 @@
+import { Card, CardContent } from "@/components/ui/card";
+import { Quote } from "lucide-react";
+
+const HeadmasterSection = () => {
+  return (
+    <section id="headmaster" className="py-20 bg-secondary/30">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">
+            Message from the Headmaster
+          </h2>
+          <div className="section-divider mb-6" />
+        </div>
+
+        <div className="max-w-4xl mx-auto">
+          <Card className="overflow-hidden">
+            <CardContent className="p-0">
+              <div className="md:flex">
+                {/* Headmaster Photo Placeholder */}
+                <div className="md:w-1/3 bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center p-8">
+                  <div className="w-40 h-40 rounded-full bg-primary-foreground/20 flex items-center justify-center border-4 border-accent">
+                    <span className="font-serif text-5xl text-primary-foreground font-bold">HM</span>
+                  </div>
+                </div>
+
+                {/* Message Content */}
+                <div className="md:w-2/3 p-8 md:p-10">
+                  <Quote className="w-10 h-10 text-accent mb-4" />
+                  
+                  <blockquote className="text-muted-foreground leading-relaxed mb-6 space-y-4">
+                    <p>
+                      Assalamu Alaikum Warahmatullahi Wabarakatuh,
+                    </p>
+                    <p>
+                      Welcome to Africana Muslim Secondary School. Our institution stands as a beacon of 
+                      academic excellence rooted in Islamic values. We are committed to nurturing students 
+                      who will excel both in their studies and in their faith.
+                    </p>
+                    <p>
+                      At Africana Muslim, we believe that education is not merely about acquiring knowledge, 
+                      but about developing character, discipline, and a sense of responsibility towards 
+                      our community and the Ummah at large.
+                    </p>
+                    <p>
+                      We invite you to join our family and embark on a journey of growth, learning, 
+                      and spiritual development.
+                    </p>
+                  </blockquote>
+
+                  <div className="border-t border-border pt-4">
+                    <p className="font-serif font-semibold text-foreground text-lg">
+                      The Headmaster
+                    </p>
+                    <p className="text-muted-foreground text-sm">
+                      Africana Muslim Secondary School
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default HeadmasterSection;

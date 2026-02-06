@@ -22,6 +22,7 @@ const Index = () => {
         <UniformSection />
         <RequirementsSection />
         <GallerySection />
+        <HeadmasterSection />
         <ContactSection />
       </main>
       <Footer />
