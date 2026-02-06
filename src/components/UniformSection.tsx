@@ -1,7 +1,6 @@
 import { Shirt } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import uniformGirls from "@/assets/uniform-girls.jpg";
-import uniformBoys from "@/assets/uniform-boys.jpg";
+import uniformFull from "@/assets/uniform-full.png";
 
 const UniformSection = () => {
   const girlsItems = [
