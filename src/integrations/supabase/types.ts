@@ -14,16 +14,183 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      application_notes: {
+        Row: {
+          application_id: string
+          created_at: string
+          id: string
+          note: string
+          staff_id: string
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          id?: string
+          note: string
+          staff_id: string
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          id?: string
+          note?: string
+          staff_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "application_notes_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "application_notes_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      applications: {
+        Row: {
+          admin_notes: string | null
+          birth_certificate_url: string | null
+          class_level: string
+          created_at: string
+          emergency_contact_name: string
+          emergency_contact_phone: string
+          emergency_contact_relationship: string
+          id: string
+          parent_address: string
+          parent_email: string
+          parent_name: string
+          parent_occupation: string | null
+          parent_phone: string
+          parent_relationship: string
+          passport_photo_url: string | null
+          previous_results_url: string | null
+          previous_school_class: string | null
+          previous_school_leaving_reason: string | null
+          previous_school_name: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["application_status"]
+          student_date_of_birth: string
+          student_first_name: string
+          student_gender: string
+          student_last_name: string
+          student_religion: string | null
+          student_type: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          birth_certificate_url?: string | null
+          class_level: string
+          created_at?: string
+          emergency_contact_name: string
+          emergency_contact_phone: string
+          emergency_contact_relationship: string
+          id?: string
+          parent_address: string
+          parent_email: string
+          parent_name: string
+          parent_occupation?: string | null
+          parent_phone: string
+          parent_relationship: string
+          passport_photo_url?: string | null
+          previous_results_url?: string | null
+          previous_school_class?: string | null
+          previous_school_leaving_reason?: string | null
+          previous_school_name?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["application_status"]
+          student_date_of_birth: string
+          student_first_name: string
+          student_gender: string
+          student_last_name: string
+          student_religion?: string | null
+          student_type: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          birth_certificate_url?: string | null
+          class_level?: string
+          created_at?: string
+          emergency_contact_name?: string
+          emergency_contact_phone?: string
+          emergency_contact_relationship?: string
+          id?: string
+          parent_address?: string
+          parent_email?: string
+          parent_name?: string
+          parent_occupation?: string | null
+          parent_phone?: string
+          parent_relationship?: string
+          passport_photo_url?: string | null
+          previous_results_url?: string | null
+          previous_school_class?: string | null
+          previous_school_leaving_reason?: string | null
+          previous_school_name?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["application_status"]
+          student_date_of_birth?: string
+          student_first_name?: string
+          student_gender?: string
+          student_last_name?: string
+          student_religion?: string | null
+          student_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      staff_members: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          role: Database["public"]["Enums"]["staff_role"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          role?: Database["public"]["Enums"]["staff_role"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          role?: Database["public"]["Enums"]["staff_role"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_staff_id: { Args: never; Returns: string }
+      is_admin: { Args: never; Returns: boolean }
+      is_staff_or_admin: { Args: never; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      application_status: "pending" | "under_review" | "approved" | "rejected"
+      staff_role: "admin" | "staff"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +317,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      application_status: ["pending", "under_review", "approved", "rejected"],
+      staff_role: ["admin", "staff"],
+    },
   },
 } as const
