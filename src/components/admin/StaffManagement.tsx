@@ -104,7 +104,7 @@ const StaffManagement = () => {
     }
   };
 
-  const handleRoleChange = async (staffId: string, newRole: string) => {
+  const handleRoleChange = async (staffId: string, newRole: "admin" | "staff") => {
     const { error } = await supabase
       .from('staff_members')
       .update({ role: newRole })

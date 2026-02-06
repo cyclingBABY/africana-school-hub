@@ -120,12 +120,12 @@ const Apply = () => {
       }
 
       // Submit application
-      const { error } = await supabase.from('applications').insert({
+      const { error } = await supabase.from('applications').insert([{
         ...data,
         birth_certificate_url: birthCertUrl,
         passport_photo_url: photoUrl,
         previous_results_url: resultsUrl,
-      });
+      }]);
 
       if (error) throw error;
 

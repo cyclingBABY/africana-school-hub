@@ -83,7 +83,7 @@ const ApplicationsList = ({ staffId }: ApplicationsListProps) => {
     await fetchNotes(app.id);
   };
 
-  const handleStatusChange = async (appId: string, newStatus: string) => {
+  const handleStatusChange = async (appId: string, newStatus: "pending" | "under_review" | "approved" | "rejected") => {
     const { error } = await supabase
       .from('applications')
       .update({ 
