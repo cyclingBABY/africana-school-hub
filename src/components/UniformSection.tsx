@@ -4,11 +4,11 @@ import uniformFull from "@/assets/uniform-full.png";
 
 const UniformSection = () => {
   const girlsItems = [
-    "2 Skirts",
-    "2 Shirts",
-    "Veil",
-    "T-shirts",
-    "Sweater",
+    "2 Navy Blue Skirts",
+    "2 White Polo Shirts (blue trim)",
+    "Hijab/Veil",
+    "School Beanie Cap",
+    "Black Hoodie/Sweater",
   ];
 
   const girlsBoardingExtra = ["Boarding T-shirts", "Boarding Skirts"];
