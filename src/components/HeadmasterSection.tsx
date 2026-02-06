@@ -17,10 +17,14 @@ const HeadmasterSection = () => {
           <Card className="overflow-hidden">
             <CardContent className="p-0">
               <div className="md:flex">
-                {/* Headmaster Photo Placeholder */}
-                <div className="md:w-1/3 bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center p-8">
-                  <div className="w-40 h-40 rounded-full bg-primary-foreground/20 flex items-center justify-center border-4 border-accent">
-                    <span className="font-serif text-5xl text-primary-foreground font-bold">HM</span>
+                {/* Headmaster Photo */}
+                <div className="md:w-1/3 bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center p-6">
+                  <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-accent shadow-lg">
+                    <img 
+                      src={headmasterImage} 
+                      alt="Headmaster of Africana Muslim Secondary School"
+                      className="w-full h-full object-cover object-top"
+                    />
                   </div>
                 </div>
 
