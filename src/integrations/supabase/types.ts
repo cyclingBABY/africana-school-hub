@@ -149,6 +149,47 @@ export type Database = {
         }
         Relationships: []
       }
+      posts: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string
+          id: string
+          image_url: string | null
+          is_published: boolean | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_published?: boolean | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_published?: boolean | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "staff_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       staff_members: {
         Row: {
           created_at: string
@@ -156,6 +197,8 @@ export type Database = {
           full_name: string
           id: string
           role: Database["public"]["Enums"]["staff_role"]
+          school_position: string | null
+          status: Database["public"]["Enums"]["staff_status"] | null
           updated_at: string
           user_id: string
         }
@@ -165,6 +208,8 @@ export type Database = {
           full_name: string
           id?: string
           role?: Database["public"]["Enums"]["staff_role"]
+          school_position?: string | null
+          status?: Database["public"]["Enums"]["staff_status"] | null
           updated_at?: string
           user_id: string
         }
@@ -174,6 +219,8 @@ export type Database = {
           full_name?: string
           id?: string
           role?: Database["public"]["Enums"]["staff_role"]
+          school_position?: string | null
+          status?: Database["public"]["Enums"]["staff_status"] | null
           updated_at?: string
           user_id?: string
         }
@@ -186,11 +233,14 @@ export type Database = {
     Functions: {
       get_staff_id: { Args: never; Returns: string }
       is_admin: { Args: never; Returns: boolean }
+      is_approved_staff: { Args: never; Returns: boolean }
       is_staff_or_admin: { Args: never; Returns: boolean }
+      is_super_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       application_status: "pending" | "under_review" | "approved" | "rejected"
-      staff_role: "admin" | "staff"
+      staff_role: "admin" | "staff" | "super_admin"
+      staff_status: "pending" | "approved" | "blocked"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -319,7 +369,8 @@ export const Constants = {
   public: {
     Enums: {
       application_status: ["pending", "under_review", "approved", "rejected"],
-      staff_role: ["admin", "staff"],
+      staff_role: ["admin", "staff", "super_admin"],
+      staff_status: ["pending", "approved", "blocked"],
     },
   },
 } as const

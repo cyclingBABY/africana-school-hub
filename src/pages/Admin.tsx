@@ -8,21 +8,31 @@ import {
   Users, 
   LogOut, 
   Menu,
-  X
+  Edit3,
+  Crown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import ApplicationsList from "@/components/admin/ApplicationsList";
 import StaffManagement from "@/components/admin/StaffManagement";
 import DashboardStats from "@/components/admin/DashboardStats";
+import ContentManagement from "@/components/admin/ContentManagement";
+import { Badge } from "@/components/ui/badge";
 
-type TabType = "dashboard" | "applications" | "staff";
+type TabType = "dashboard" | "applications" | "staff" | "content";
+
+interface StaffMember {
+  id: string;
+  full_name: string;
+  role: 'admin' | 'staff' | 'super_admin';
+  status: 'pending' | 'approved' | 'blocked';
+}
 
 const Admin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [user, setUser] = useState<User | null>(null);
-  const [staffMember, setStaffMember] = useState<any>(null);
+  const [staffMember, setStaffMember] = useState<StaffMember | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabType>("dashboard");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -71,7 +81,28 @@ const Admin = () => {
       return;
     }
 
-    setStaffMember(data);
+    if (data.status === 'pending') {
+      toast({
+        title: "Pending Approval",
+        description: "Your account is pending approval from the Super Admin.",
+      });
+      await supabase.auth.signOut();
+      navigate('/auth');
+      return;
+    }
+
+    if (data.status === 'blocked') {
+      toast({
+        title: "Account Blocked",
+        description: "Your account has been blocked. Please contact the administrator.",
+        variant: "destructive",
+      });
+      await supabase.auth.signOut();
+      navigate('/auth');
+      return;
+    }
+
+    setStaffMember(data as StaffMember);
     setIsLoading(false);
   };
 
@@ -79,6 +110,9 @@ const Admin = () => {
     await supabase.auth.signOut();
     navigate('/');
   };
+
+  const isSuperAdmin = staffMember?.role === 'super_admin';
+  const isAdminOrSuper = staffMember?.role === 'admin' || staffMember?.role === 'super_admin';
 
   if (isLoading) {
     return (
@@ -91,10 +125,27 @@ const Admin = () => {
   const navItems = [
     { id: "dashboard" as TabType, label: "Dashboard", icon: LayoutDashboard },
     { id: "applications" as TabType, label: "Applications", icon: FileText },
-    ...(staffMember?.role === 'admin' 
+    { id: "content" as TabType, label: "Content", icon: Edit3 },
+    ...(isSuperAdmin 
       ? [{ id: "staff" as TabType, label: "Staff Management", icon: Users }] 
       : []),
   ];
+
+  const getRoleBadge = () => {
+    switch (staffMember?.role) {
+      case 'super_admin':
+        return (
+          <Badge className="bg-amber-500 text-white">
+            <Crown className="w-3 h-3 mr-1" />
+            Super Admin
+          </Badge>
+        );
+      case 'admin':
+        return <Badge className="bg-primary">Admin</Badge>;
+      default:
+        return <Badge variant="secondary">Staff</Badge>;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -157,7 +208,9 @@ const Admin = () => {
           <div className="p-4 border-t border-border">
             <div className="mb-4 px-4">
               <p className="font-medium text-foreground truncate">{staffMember?.full_name}</p>
-              <p className="text-sm text-muted-foreground capitalize">{staffMember?.role}</p>
+              <div className="mt-1">
+                {getRoleBadge()}
+              </div>
             </div>
             <Button
               variant="outline"
@@ -189,8 +242,11 @@ const Admin = () => {
         {/* Content */}
         <main className="flex-1 p-4 md:p-6 overflow-auto">
           {activeTab === "dashboard" && <DashboardStats />}
-          {activeTab === "applications" && <ApplicationsList staffId={staffMember?.id} />}
-          {activeTab === "staff" && staffMember?.role === 'admin' && <StaffManagement />}
+          {activeTab === "applications" && <ApplicationsList staffId={staffMember?.id || ''} />}
+          {activeTab === "content" && staffMember && (
+            <ContentManagement staffId={staffMember.id} isSuperAdmin={isSuperAdmin} />
+          )}
+          {activeTab === "staff" && isSuperAdmin && <StaffManagement />}
         </main>
       </div>
     </div>
