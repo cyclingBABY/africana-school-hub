@@ -19,7 +19,7 @@ const HeadmasterSection = () => {
               <div className="md:flex">
                 {/* Headmaster Photo */}
                 <div className="md:w-1/3 bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center p-6">
-                  <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-accent shadow-lg">
+                  <div className="w-48 h-64 rounded-lg overflow-hidden border-4 border-accent shadow-lg">
                     <img 
                       src={headmasterImage} 
                       alt="Headmaster of Africana Muslim Secondary School"
