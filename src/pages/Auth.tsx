@@ -22,6 +22,13 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const loginSchema = z.object({
   email: z.string().email("Valid email is required"),
@@ -33,6 +40,7 @@ const signupSchema = z.object({
   email: z.string().email("Valid email is required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   confirmPassword: z.string(),
+  schoolPosition: z.string().min(2, "Please select or enter your role"),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
@@ -41,11 +49,25 @@ const signupSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 type SignupFormData = z.infer<typeof signupSchema>;
 
+const schoolPositions = [
+  "Teacher",
+  "Head Teacher",
+  "Deputy Head Teacher",
+  "Bursar",
+  "Secretary",
+  "Librarian",
+  "Laboratory Technician",
+  "IT Administrator",
+  "Counselor",
+  "Other",
+];
+
 const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("login");
+  const [customPosition, setCustomPosition] = useState("");
 
   const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -54,14 +76,15 @@ const Auth = () => {
 
   const signupForm = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
-    defaultValues: { fullName: "", email: "", password: "", confirmPassword: "" },
+    defaultValues: { fullName: "", email: "", password: "", confirmPassword: "", schoolPosition: "" },
   });
+
+  const selectedPosition = signupForm.watch("schoolPosition");
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (session?.user) {
-          // Check if user is staff
           setTimeout(() => {
             checkStaffStatus(session.user.id);
           }, 0);
@@ -69,7 +92,6 @@ const Auth = () => {
       }
     );
 
-    // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         checkStaffStatus(session.user.id);
@@ -82,12 +104,26 @@ const Auth = () => {
   const checkStaffStatus = async (userId: string) => {
     const { data } = await supabase
       .from('staff_members')
-      .select('id')
+      .select('id, status')
       .eq('user_id', userId)
       .maybeSingle();
     
     if (data) {
-      navigate('/admin');
+      if (data.status === 'approved') {
+        navigate('/admin');
+      } else if (data.status === 'pending') {
+        toast({
+          title: "Pending Approval",
+          description: "Your account is pending approval from the Super Admin.",
+        });
+      } else if (data.status === 'blocked') {
+        toast({
+          title: "Account Blocked",
+          description: "Your account has been blocked. Please contact the administrator.",
+          variant: "destructive",
+        });
+        await supabase.auth.signOut();
+      }
     }
   };
 
@@ -134,15 +170,33 @@ const Auth = () => {
 
       if (error) throw error;
 
-      // Note: The first user will need to be made an admin manually via database
-      // Subsequent admins can add new staff members
+      if (authData.user) {
+        const position = data.schoolPosition === "Other" ? customPosition : data.schoolPosition;
+        
+        // Create pending staff registration
+        const { error: staffError } = await supabase
+          .from('staff_members')
+          .insert({
+            user_id: authData.user.id,
+            email: data.email,
+            full_name: data.fullName,
+            role: 'staff',
+            status: 'pending',
+            school_position: position,
+          });
+
+        if (staffError) {
+          console.error('Staff registration error:', staffError);
+        }
+      }
       
       toast({
-        title: "Account Created",
-        description: "Please check your email to verify your account. An admin will need to approve your access.",
+        title: "Registration Submitted",
+        description: "Your registration is pending approval. You'll be notified once approved.",
       });
 
       setActiveTab("login");
+      signupForm.reset();
     } catch (error: any) {
       if (error.message?.includes("already registered")) {
         toast({
@@ -195,7 +249,7 @@ const Auth = () => {
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="signup">Sign Up</TabsTrigger>
+                <TabsTrigger value="signup">Register</TabsTrigger>
               </TabsList>
 
               <TabsContent value="login" className="mt-6">
@@ -272,6 +326,40 @@ const Auth = () => {
                     />
                     <FormField
                       control={signupForm.control}
+                      name="schoolPosition"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Role in School</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select your role" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {schoolPositions.map((position) => (
+                                <SelectItem key={position} value={position}>
+                                  {position}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    {selectedPosition === "Other" && (
+                      <div>
+                        <FormLabel>Specify Your Role</FormLabel>
+                        <Input
+                          placeholder="Enter your role"
+                          value={customPosition}
+                          onChange={(e) => setCustomPosition(e.target.value)}
+                        />
+                      </div>
+                    )}
+                    <FormField
+                      control={signupForm.control}
                       name="password"
                       render={({ field }) => (
                         <FormItem>
@@ -300,16 +388,16 @@ const Auth = () => {
                       {isLoading ? (
                         <>
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Creating Account...
+                          Submitting...
                         </>
                       ) : (
-                        "Sign Up"
+                        "Submit Registration"
                       )}
                     </Button>
                   </form>
                 </Form>
                 <p className="text-sm text-muted-foreground text-center mt-4">
-                  After signing up, an admin must add you as a staff member.
+                  Your registration will be reviewed by the Super Admin.
                 </p>
               </TabsContent>
             </Tabs>
