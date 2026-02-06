@@ -1,25 +1,23 @@
 import { Shirt } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import uniformGirls from "@/assets/uniform-girls.jpg";
-import uniformBoys from "@/assets/uniform-boys.jpg";
+import uniformFull from "@/assets/uniform-full.png";
 
 const UniformSection = () => {
   const girlsItems = [
-    "2 Skirts",
-    "2 Shirts",
-    "Veil",
-    "T-shirts",
-    "Sweater",
+    "2 Navy Blue Skirts",
+    "2 White Polo Shirts (blue trim)",
+    "Hijab/Veil",
+    "School Beanie Cap",
+    "Black Hoodie/Sweater",
   ];
 
   const girlsBoardingExtra = ["Boarding T-shirts", "Boarding Skirts"];
 
   const boysItems = [
-    "2 Trousers",
-    "2 Shirts",
-    "Tie",
-    "T-shirts",
-    "Sweater",
+    "2 Navy Blue Trousers",
+    "2 White Polo Shirts (blue trim)",
+    "School Beanie Cap",
+    "Black Hoodie/Sweater",
   ];
 
   const boysBoardingExtra = ["Boarding T-shirts"];
@@ -60,6 +58,20 @@ const UniformSection = () => {
           </Card>
         </div>
 
+        {/* Uniform Showcase Image */}
+        <div className="max-w-4xl mx-auto mb-12">
+          <div className="rounded-lg overflow-hidden shadow-lg bg-white">
+            <img 
+              src={uniformFull} 
+              alt="Complete school uniform set - white polo shirts with blue trim, navy skirts and trousers, black hoodie, and beanie caps"
+              className="w-full h-auto object-contain"
+            />
+          </div>
+          <p className="text-center text-muted-foreground mt-4 text-sm">
+            White polo shirts with blue trim • Navy blue skirts & trousers • Black hoodie • School beanie cap
+          </p>
+        </div>
+
         {/* Uniform Details */}
         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {/* Girls */}
@@ -73,15 +85,6 @@ const UniformSection = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              {/* Uniform Image */}
-              <div className="aspect-square overflow-hidden bg-muted">
-                <img 
-                  src={uniformGirls} 
-                  alt="Girls school uniform with white blouse, green skirt and hijab"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              
               <div className="p-6">
                 <ul className="space-y-2">
                   {girlsItems.map((item) => (
@@ -119,15 +122,6 @@ const UniformSection = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              {/* Uniform Image */}
-              <div className="aspect-square overflow-hidden bg-muted">
-                <img 
-                  src={uniformBoys} 
-                  alt="Boys school uniform with white shirt, green tie, navy trousers and sweater"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              
               <div className="p-6">
                 <ul className="space-y-2">
                   {boysItems.map((item) => (
