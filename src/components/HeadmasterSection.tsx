@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Quote } from "lucide-react";
+import headmasterImage from "@/assets/headmaster.png";
 
 const HeadmasterSection = () => {
   return (
