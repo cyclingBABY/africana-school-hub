@@ -1,54 +1,54 @@
 import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import galleryClassroom from "@/assets/gallery-classroom.jpg";
-import galleryCampus from "@/assets/gallery-campus.jpg";
-import gallerySports from "@/assets/gallery-sports.jpg";
-import galleryPrayer from "@/assets/gallery-prayer.jpg";
-import galleryLab from "@/assets/gallery-lab.jpg";
-import galleryLibrary from "@/assets/gallery-library.jpg";
+import trip1 from "@/assets/trip-1.jpg";
+import trip2 from "@/assets/trip-2.jpg";
+import trip3 from "@/assets/trip-3.jpg";
+import sports1 from "@/assets/sports-1.jpg";
+import sports2 from "@/assets/sports-2.jpg";
+import sports4 from "@/assets/sports-4.jpg";
 
 const slides = [
   {
-    image: galleryCampus,
+    image: trip2,
     title: "Welcome to Africana Muslim Secondary School",
     subtitle: "A Center of Academic Excellence",
     description: "Located along Bombo Road, Kawempe, we provide quality education in a nurturing Islamic environment.",
     highlight: "Established on the foundation of knowledge and faith",
   },
   {
-    image: galleryClassroom,
+    image: trip1,
     title: "Quality Education",
     subtitle: "From S.1 to S.6",
     description: "Our comprehensive curriculum covers both day and boarding programs, preparing students for academic success.",
     highlight: "Day scholars: UGX 500,000 | Boarding: UGX 1,000,000",
   },
   {
-    image: galleryLab,
-    title: "Modern Facilities",
-    subtitle: "Science & Technology",
-    description: "Well-equipped laboratories for practical learning in sciences, fostering innovation and discovery.",
-    highlight: "Arts & Sciences streams available",
-  },
-  {
-    image: galleryLibrary,
-    title: "Academic Resources",
-    subtitle: "Library & Study Spaces",
-    description: "Rich collection of academic and Islamic texts to support comprehensive learning and research.",
+    image: trip3,
+    title: "Educational Excursions",
+    subtitle: "Learning Beyond Classroom",
+    description: "Regular field trips and outdoor learning experiences to broaden students' horizons.",
     highlight: "Attain Knowledge and Rise in Degree",
   },
   {
-    image: galleryPrayer,
-    title: "Spiritual Development",
-    subtitle: "Islamic Values",
-    description: "Dedicated prayer facilities and Islamic education nurturing both academic and spiritual growth.",
-    highlight: "Building character through faith",
+    image: sports4,
+    title: "Sports Excellence",
+    subtitle: "Sokolo League Champions",
+    description: "Our students excel in athletics, proudly leading the Schools League 2025 standings.",
+    highlight: "1st Place - Africana Muslims with 13 points!",
   },
   {
-    image: gallerySports,
-    title: "Extracurricular Activities",
-    subtitle: "Sports & Recreation",
-    description: "Physical education programs and sports activities for holistic student development.",
+    image: sports1,
+    title: "Athletic Development",
+    subtitle: "Physical Education",
+    description: "Building character, teamwork, and healthy competition through sports programs.",
+    highlight: "Building champions on and off the field",
+  },
+  {
+    image: sports2,
+    title: "Team Spirit",
+    subtitle: "Unity & Strength",
+    description: "Our teams celebrate victories together, fostering brotherhood and sportsmanship.",
     highlight: "Healthy body, healthy mind",
   },
 ];
