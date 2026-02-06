@@ -1,4 +1,5 @@
-import { Menu, X, Phone, Mail } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Menu, X, Phone, Mail, UserCog } from "lucide-react";
 import { useState } from "react";
 
 const Header = () => {
