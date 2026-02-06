@@ -6,6 +6,8 @@ import gallerySports from "@/assets/gallery-sports.jpg";
 import galleryPrayer from "@/assets/gallery-prayer.jpg";
 import galleryLab from "@/assets/gallery-lab.jpg";
 import galleryLibrary from "@/assets/gallery-library.jpg";
+import gallerySchoolTrip from "@/assets/gallery-school-trip.jpg";
+import gallerySportsReal from "@/assets/gallery-sports-real.jpg";
 
 const galleryImages = [
   {
@@ -43,6 +45,18 @@ const galleryImages = [
     alt: "Sports Activities",
     title: "Sports & Activities",
     description: "Physical education and extracurricular programs",
+  },
+  {
+    src: gallerySchoolTrip,
+    alt: "School Trip",
+    title: "School Trip",
+    description: "Educational excursions and outdoor learning experiences",
+  },
+  {
+    src: gallerySportsReal,
+    alt: "Sports Team",
+    title: "Sports",
+    description: "Competitive sports and athletic achievements",
   },
 ];
 
