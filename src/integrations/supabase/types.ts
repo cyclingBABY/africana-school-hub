@@ -233,7 +233,9 @@ export type Database = {
     Functions: {
       get_staff_id: { Args: never; Returns: string }
       is_admin: { Args: never; Returns: boolean }
+      is_approved_staff: { Args: never; Returns: boolean }
       is_staff_or_admin: { Args: never; Returns: boolean }
+      is_super_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       application_status: "pending" | "under_review" | "approved" | "rejected"
