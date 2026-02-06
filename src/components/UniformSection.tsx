@@ -14,11 +14,10 @@ const UniformSection = () => {
   const girlsBoardingExtra = ["Boarding T-shirts", "Boarding Skirts"];
 
   const boysItems = [
-    "2 Trousers",
-    "2 Shirts",
-    "Tie",
-    "T-shirts",
-    "Sweater",
+    "2 Navy Blue Trousers",
+    "2 White Polo Shirts (blue trim)",
+    "School Beanie Cap",
+    "Black Hoodie/Sweater",
   ];
 
   const boysBoardingExtra = ["Boarding T-shirts"];
