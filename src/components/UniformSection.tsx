@@ -58,6 +58,20 @@ const UniformSection = () => {
           </Card>
         </div>
 
+        {/* Uniform Showcase Image */}
+        <div className="max-w-4xl mx-auto mb-12">
+          <div className="rounded-lg overflow-hidden shadow-lg bg-white">
+            <img 
+              src={uniformFull} 
+              alt="Complete school uniform set - white polo shirts with blue trim, navy skirts and trousers, black hoodie, and beanie caps"
+              className="w-full h-auto object-contain"
+            />
+          </div>
+          <p className="text-center text-muted-foreground mt-4 text-sm">
+            White polo shirts with blue trim • Navy blue skirts & trousers • Black hoodie • School beanie cap
+          </p>
+        </div>
+
         {/* Uniform Details */}
         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {/* Girls */}
