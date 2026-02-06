@@ -70,7 +70,7 @@ const StudentsSlider = () => {
 
         <div className="relative max-w-4xl mx-auto">
           {/* Main Slider */}
-          <div className="relative h-[450px] md:h-[550px] rounded-2xl overflow-hidden shadow-2xl">
+          <div className="relative h-[450px] md:h-[600px] rounded-2xl overflow-hidden shadow-2xl bg-muted">
             {studentImages.map((image, index) => (
               <div
                 key={index}
@@ -83,10 +83,10 @@ const StudentsSlider = () => {
                 <img
                   src={image.src}
                   alt={image.alt}
-                  className="w-full h-full object-cover object-top"
+                  className="w-full h-full object-contain"
                 />
                 {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-transparent to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-foreground/70 to-transparent" />
                 
                 {/* Caption */}
                 <div className="absolute bottom-6 left-6 right-6">
