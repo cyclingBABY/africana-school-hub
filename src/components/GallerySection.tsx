@@ -1,62 +1,90 @@
 import { useState } from "react";
 import { X } from "lucide-react";
-import galleryClassroom from "@/assets/gallery-classroom.jpg";
-import galleryCampus from "@/assets/gallery-campus.jpg";
-import gallerySports from "@/assets/gallery-sports.jpg";
-import galleryPrayer from "@/assets/gallery-prayer.jpg";
-import galleryLab from "@/assets/gallery-lab.jpg";
-import galleryLibrary from "@/assets/gallery-library.jpg";
-import gallerySchoolTrip from "@/assets/gallery-school-trip.jpg";
+import trip1 from "@/assets/trip-1.jpg";
+import trip2 from "@/assets/trip-2.jpg";
+import trip3 from "@/assets/trip-3.jpg";
+import trip4 from "@/assets/trip-4.jpg";
+import trip5 from "@/assets/trip-5.jpg";
+import trip6 from "@/assets/trip-6.jpg";
+import sports1 from "@/assets/sports-1.jpg";
+import sports2 from "@/assets/sports-2.jpg";
+import sports3 from "@/assets/sports-3.jpg";
+import sports4 from "@/assets/sports-4.jpg";
 import gallerySportsReal from "@/assets/gallery-sports-real.jpg";
+import gallerySchoolTrip from "@/assets/gallery-school-trip.jpg";
 
 const galleryImages = [
   {
-    src: galleryCampus,
-    alt: "School Campus",
-    title: "Our Campus",
-    description: "Modern facilities with Islamic architectural elements",
-  },
-  {
-    src: galleryClassroom,
-    alt: "Classroom",
-    title: "Classrooms",
-    description: "Well-equipped learning spaces for academic excellence",
-  },
-  {
-    src: galleryLab,
-    alt: "Science Laboratory",
-    title: "Science Lab",
-    description: "Hands-on experiments for practical learning",
-  },
-  {
-    src: galleryLibrary,
-    alt: "School Library",
-    title: "Library",
-    description: "Rich collection of academic and Islamic resources",
-  },
-  {
-    src: galleryPrayer,
-    alt: "Prayer Room",
-    title: "Prayer Hall",
-    description: "Dedicated space for spiritual development",
-  },
-  {
-    src: gallerySports,
-    alt: "Sports Activities",
-    title: "Sports & Activities",
-    description: "Physical education and extracurricular programs",
-  },
-  {
-    src: gallerySchoolTrip,
-    alt: "School Trip",
+    src: trip2,
+    alt: "Students on school trip",
     title: "School Trip",
-    description: "Educational excursions and outdoor learning experiences",
+    description: "Students enjoying educational excursions by the lake",
+  },
+  {
+    src: trip1,
+    alt: "Students posing together",
+    title: "Outdoor Learning",
+    description: "Building friendships and memories beyond the classroom",
+  },
+  {
+    src: sports4,
+    alt: "League standings",
+    title: "League Champions",
+    description: "Africana Muslims leading the Sokolo League 2025",
+  },
+  {
+    src: sports1,
+    alt: "Football celebration",
+    title: "Goal Celebration",
+    description: "Our football team celebrating a winning goal",
+  },
+  {
+    src: trip3,
+    alt: "Group photo",
+    title: "Class Trip",
+    description: "Students on an educational excursion",
+  },
+  {
+    src: sports2,
+    alt: "Team huddle",
+    title: "Team Spirit",
+    description: "Unity and teamwork on the field",
+  },
+  {
+    src: trip4,
+    alt: "Boys at the lake",
+    title: "Student Life",
+    description: "Students enjoying outdoor activities",
+  },
+  {
+    src: sports3,
+    alt: "Fans cheering",
+    title: "Fan Support",
+    description: "Enthusiastic supporters at school matches",
+  },
+  {
+    src: trip5,
+    alt: "Students at beach",
+    title: "Beach Trip",
+    description: "Fun and learning at the waterfront",
   },
   {
     src: gallerySportsReal,
-    alt: "Sports Team",
-    title: "Sports",
-    description: "Competitive sports and athletic achievements",
+    alt: "Sports team",
+    title: "Athletics",
+    description: "Students excelling in sports programs",
+  },
+  {
+    src: trip6,
+    alt: "Class group photo",
+    title: "Class Memories",
+    description: "Creating lasting friendships and memories",
+  },
+  {
+    src: gallerySchoolTrip,
+    alt: "School excursion",
+    title: "Excursion Day",
+    description: "Educational trips for holistic development",
   },
 ];
 
