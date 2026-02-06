@@ -254,7 +254,7 @@ const StaffManagement = () => {
                   <div className="flex items-center gap-4">
                     <Select 
                       value={staff.role} 
-                      onValueChange={(value) => handleRoleChange(staff.id, value)}
+                      onValueChange={(value: "admin" | "staff") => handleRoleChange(staff.id, value)}
                     >
                       <SelectTrigger className="w-[120px]">
                         <SelectValue />

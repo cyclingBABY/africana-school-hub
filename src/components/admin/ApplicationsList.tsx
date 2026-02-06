@@ -350,7 +350,7 @@ const ApplicationsList = ({ staffId }: ApplicationsListProps) => {
                 <span className="text-sm font-medium">Update Status:</span>
                 <Select 
                   value={selectedApp.status} 
-                  onValueChange={(value) => handleStatusChange(selectedApp.id, value)}
+                  onValueChange={(value: "pending" | "under_review" | "approved" | "rejected") => handleStatusChange(selectedApp.id, value)}
                 >
                   <SelectTrigger className="w-[180px]">
                     <SelectValue />

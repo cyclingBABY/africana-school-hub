@@ -120,12 +120,32 @@ const Apply = () => {
       }
 
       // Submit application
-      const { error } = await supabase.from('applications').insert([{
-        ...data,
+      const applicationData = {
+        student_first_name: data.student_first_name,
+        student_last_name: data.student_last_name,
+        student_date_of_birth: data.student_date_of_birth,
+        student_gender: data.student_gender,
+        student_religion: data.student_religion || null,
+        class_level: data.class_level,
+        student_type: data.student_type,
+        parent_name: data.parent_name,
+        parent_email: data.parent_email,
+        parent_phone: data.parent_phone,
+        parent_relationship: data.parent_relationship,
+        parent_address: data.parent_address,
+        parent_occupation: data.parent_occupation || null,
+        previous_school_name: data.previous_school_name || null,
+        previous_school_class: data.previous_school_class || null,
+        previous_school_leaving_reason: data.previous_school_leaving_reason || null,
+        emergency_contact_name: data.emergency_contact_name,
+        emergency_contact_phone: data.emergency_contact_phone,
+        emergency_contact_relationship: data.emergency_contact_relationship,
         birth_certificate_url: birthCertUrl,
         passport_photo_url: photoUrl,
         previous_results_url: resultsUrl,
-      }]);
+      };
+      
+      const { error } = await supabase.from('applications').insert([applicationData]);
 
       if (error) throw error;
 
