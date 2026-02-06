@@ -1,6 +1,8 @@
 import { Shirt } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import UniformModel from "./UniformModel";
+import uniformGirls from "@/assets/uniform-girls.jpg";
+import uniformBoys from "@/assets/uniform-boys.jpg";
+
 const UniformSection = () => {
   const girlsItems = [
     "2 Skirts",
@@ -71,8 +73,14 @@ const UniformSection = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              {/* 3D Model */}
-              <UniformModel type="girls" />
+              {/* Uniform Image */}
+              <div className="aspect-square overflow-hidden bg-muted">
+                <img 
+                  src={uniformGirls} 
+                  alt="Girls school uniform with white blouse, green skirt and hijab"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                />
+              </div>
               
               <div className="p-6">
                 <ul className="space-y-2">
@@ -111,8 +119,14 @@ const UniformSection = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              {/* 3D Model */}
-              <UniformModel type="boys" />
+              {/* Uniform Image */}
+              <div className="aspect-square overflow-hidden bg-muted">
+                <img 
+                  src={uniformBoys} 
+                  alt="Boys school uniform with white shirt, green tie, navy trousers and sweater"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                />
+              </div>
               
               <div className="p-6">
                 <ul className="space-y-2">
