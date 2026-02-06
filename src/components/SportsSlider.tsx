@@ -141,8 +141,8 @@ const SportsSlider = () => {
               />
             ))}
           </div>
-          </div>
         </AnimatedSection>
+      </div>
     </section>
   );
 };
