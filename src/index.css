@@ -1,8 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @layer base {
   :root {
@@ -110,6 +110,70 @@
   
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Playfair Display', serif;
+  }
+
+  /* Animated headings */
+  .animated-heading {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--foreground)) 0%,
+      hsl(var(--primary)) 50%,
+      hsl(var(--foreground)) 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 3s linear infinite;
+  }
+
+  @keyframes shine {
+    to {
+      background-position: 200% center;
+    }
+  }
+
+  .heading-underline {
+    position: relative;
+    display: inline-block;
+  }
+
+  .heading-underline::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 3px;
+    background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--accent)));
+    border-radius: 2px;
+    transition: width 0.6s ease-out;
+  }
+
+  .heading-underline.visible::after {
+    width: 100%;
+  }
+
+  .text-reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  }
+
+  .text-reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .letter-spacing-animate {
+    letter-spacing: 0.5em;
+    opacity: 0;
+    transition: letter-spacing 0.8s ease-out, opacity 0.5s ease-out;
+  }
+
+  .letter-spacing-animate.visible {
+    letter-spacing: normal;
+    opacity: 1;
   }
 }
 

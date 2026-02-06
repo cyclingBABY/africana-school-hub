@@ -148,8 +148,8 @@ const SchoolTripSlider = () => {
               </button>
             ))}
           </div>
-          </div>
         </AnimatedSection>
+      </div>
     </section>
   );
 };
