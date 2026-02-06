@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import AnimatedSection from "./AnimatedSection";
 import trip1 from "@/assets/trip-1.jpg";
 import trip2 from "@/assets/trip-2.jpg";
 import trip3 from "@/assets/trip-3.jpg";
@@ -62,16 +63,16 @@ const SchoolTripSlider = () => {
   return (
     <section className="py-16 bg-muted/30">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-10">
+        <AnimatedSection className="text-center mb-10">
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">
             School Trip Adventures
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Experience the joy of learning beyond the classroom through our educational excursions
           </p>
-        </div>
+        </AnimatedSection>
 
-        <div className="relative max-w-5xl mx-auto">
+        <AnimatedSection animation="scale" className="relative max-w-5xl mx-auto">
           {/* Main Slider */}
           <div className="relative h-[400px] md:h-[500px] rounded-2xl overflow-hidden shadow-2xl">
             {tripImages.map((image, index) => (
@@ -147,8 +148,8 @@ const SchoolTripSlider = () => {
               </button>
             ))}
           </div>
-        </div>
-      </div>
+          </div>
+        </AnimatedSection>
     </section>
   );
 };

@@ -1,5 +1,6 @@
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import AnimatedSection from "./AnimatedSection";
 
 const ContactSection = () => {
   const contactInfo = [
@@ -28,7 +29,7 @@ const ContactSection = () => {
   return (
     <section id="contact" className="py-20 bg-background">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
+        <AnimatedSection className="text-center mb-16">
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">
             Contact Us
           </h2>
@@ -36,45 +37,47 @@ const ContactSection = () => {
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Have questions about admissions or our programs? We're here to help. Reach out to us through any of the channels below.
           </p>
-        </div>
+        </AnimatedSection>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
           {contactInfo.map((item, index) => (
-            <Card
-              key={item.title}
-              className="text-center hover:shadow-lg transition-all hover:-translate-y-1 group"
-              style={{ animationDelay: `${index * 0.1}s` }}
+            <AnimatedSection 
+              key={item.title} 
+              animation={index % 2 === 0 ? 'fade-left' : 'fade-right'}
+              delay={index * 100}
             >
-              <CardContent className="pt-6 pb-6">
-                <div className="w-14 h-14 rounded-full bg-secondary mx-auto mb-4 flex items-center justify-center group-hover:bg-primary transition-colors">
-                  <item.icon className="w-7 h-7 text-primary group-hover:text-primary-foreground transition-colors" />
-                </div>
-                <h3 className="font-serif font-semibold text-lg text-foreground mb-3">{item.title}</h3>
-                <div className="space-y-1">
-                  {item.details.map((detail, detailIndex) => (
-                    <p key={detailIndex} className="text-muted-foreground text-sm">
-                      {item.icon === Phone ? (
-                        <a href={`tel:${detail.replace(/\s/g, '')}`} className="hover:text-primary transition-colors">
-                          {detail}
-                        </a>
-                      ) : item.icon === Mail ? (
-                        <a href={`mailto:${detail}`} className="hover:text-primary transition-colors">
-                          {detail}
-                        </a>
-                      ) : (
-                        detail
-                      )}
-                    </p>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+              <Card className="text-center hover:shadow-lg transition-all hover:-translate-y-1 group hover-lift h-full">
+                <CardContent className="pt-6 pb-6">
+                  <div className="w-14 h-14 rounded-full bg-secondary mx-auto mb-4 flex items-center justify-center group-hover:bg-primary transition-colors">
+                    <item.icon className="w-7 h-7 text-primary group-hover:text-primary-foreground transition-colors" />
+                  </div>
+                  <h3 className="font-serif font-semibold text-lg text-foreground mb-3">{item.title}</h3>
+                  <div className="space-y-1">
+                    {item.details.map((detail, detailIndex) => (
+                      <p key={detailIndex} className="text-muted-foreground text-sm">
+                        {item.icon === Phone ? (
+                          <a href={`tel:${detail.replace(/\s/g, '')}`} className="hover:text-primary transition-colors">
+                            {detail}
+                          </a>
+                        ) : item.icon === Mail ? (
+                          <a href={`mailto:${detail}`} className="hover:text-primary transition-colors">
+                            {detail}
+                          </a>
+                        ) : (
+                          detail
+                        )}
+                      </p>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </AnimatedSection>
           ))}
         </div>
 
         {/* Call to Action */}
-        <div className="mt-16 max-w-3xl mx-auto">
-          <Card className="overflow-hidden">
+        <AnimatedSection animation="scale" delay={400} className="mt-16 max-w-3xl mx-auto">
+          <Card className="overflow-hidden hover-glow">
             <div className="hero-gradient p-8 md:p-12 text-center relative">
               <div className="absolute inset-0 geometric-pattern opacity-10" />
               <div className="relative z-10">
@@ -94,7 +97,7 @@ const ContactSection = () => {
               </div>
             </div>
           </Card>
-        </div>
+        </AnimatedSection>
       </div>
     </section>
   );

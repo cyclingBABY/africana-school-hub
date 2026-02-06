@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import AnimatedSection from "./AnimatedSection";
 
 const FeesSection = () => {
   const feeData = [
@@ -20,7 +21,7 @@ const FeesSection = () => {
   return (
     <section id="fees" className="py-20 bg-secondary/30 geometric-pattern">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
+        <AnimatedSection className="text-center mb-16">
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">
             Tuition & School Fees
           </h2>
@@ -28,10 +29,10 @@ const FeesSection = () => {
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Fees vary based on the student's level and whether they are day scholars or boarding students.
           </p>
-        </div>
+        </AnimatedSection>
 
-        <div className="max-w-4xl mx-auto">
-          <Card className="overflow-hidden shadow-xl border-0">
+        <AnimatedSection animation="scale" className="max-w-4xl mx-auto">
+          <Card className="overflow-hidden shadow-xl border-0 hover-lift">
             <CardHeader className="bg-primary text-primary-foreground">
               <CardTitle className="text-center font-serif text-2xl">
                 Fee Structure (Per Term)
@@ -59,7 +60,7 @@ const FeesSection = () => {
                   </TableHeader>
                   <TableBody>
                     {feeData.map((row, index) => (
-                      <TableRow key={row.level} className={index % 2 === 0 ? "bg-background" : "bg-muted/30"}>
+                      <TableRow key={row.level} className={`${index % 2 === 0 ? "bg-background" : "bg-muted/30"} transition-colors hover:bg-secondary/50`}>
                         <TableCell className="font-semibold text-foreground py-4">
                           {row.level}
                         </TableCell>
@@ -80,15 +81,17 @@ const FeesSection = () => {
               </div>
             </CardContent>
           </Card>
+        </AnimatedSection>
 
-          {/* Important note */}
-          <div className="mt-8 flex items-start gap-3 bg-accent/10 border border-accent/30 rounded-lg p-4">
+        {/* Important note */}
+        <AnimatedSection delay={200} className="max-w-4xl mx-auto">
+          <div className="mt-8 flex items-start gap-3 bg-accent/10 border border-accent/30 rounded-lg p-4 transition-all hover:bg-accent/20">
             <AlertCircle className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
             <p className="text-sm text-foreground">
               <strong>Important:</strong> All candidate classes (S.4 and S.6) must be in the boarding section to ensure focused preparation for national examinations.
             </p>
           </div>
-        </div>
+        </AnimatedSection>
       </div>
     </section>
   );

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import AnimatedSection from "./AnimatedSection";
 import trip1 from "@/assets/trip-1.jpg";
 import trip2 from "@/assets/trip-2.jpg";
 import trip3 from "@/assets/trip-3.jpg";
@@ -80,16 +81,16 @@ const FeatureSlider = () => {
   return (
     <section className="relative py-16 bg-card overflow-hidden">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-10">
+        <AnimatedSection className="text-center mb-10">
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">
             Discover Our School
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Experience the best of education, faith, and community at Africana Muslim Secondary School
           </p>
-        </div>
+        </AnimatedSection>
 
-        <div className="relative max-w-6xl mx-auto">
+        <AnimatedSection animation="scale" className="relative max-w-6xl mx-auto">
           {/* Main Slider */}
           <div className="relative h-[500px] md:h-[450px] rounded-2xl overflow-hidden shadow-2xl">
             {slides.map((slide, index) => (
@@ -176,7 +177,7 @@ const FeatureSlider = () => {
               />
             ))}
           </div>
-        </div>
+        </AnimatedSection>
       </div>
     </section>
   );

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import AnimatedSection from "./AnimatedSection";
 import sports1 from "@/assets/sports-1.jpg";
 import sports2 from "@/assets/sports-2.jpg";
 import sports3 from "@/assets/sports-3.jpg";
@@ -56,7 +57,7 @@ const SportsSlider = () => {
   return (
     <section className="py-16 bg-card">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-10">
+        <AnimatedSection className="text-center mb-10">
           <div className="inline-flex items-center gap-2 mb-4">
             <Trophy className="h-8 w-8 text-primary" />
             <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground">
@@ -67,9 +68,9 @@ const SportsSlider = () => {
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Proud champions of Sokolo Leagues - Building champions on and off the field
           </p>
-        </div>
+        </AnimatedSection>
 
-        <div className="relative max-w-5xl mx-auto">
+        <AnimatedSection animation="scale" className="relative max-w-5xl mx-auto">
           {/* Main Slider */}
           <div className="relative h-[400px] md:h-[500px] rounded-2xl overflow-hidden shadow-2xl">
             {sportsImages.map((image, index) => (
@@ -140,8 +141,8 @@ const SportsSlider = () => {
               />
             ))}
           </div>
-        </div>
-      </div>
+          </div>
+        </AnimatedSection>
     </section>
   );
 };
