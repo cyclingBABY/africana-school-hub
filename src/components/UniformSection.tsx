@@ -71,15 +71,6 @@ const UniformSection = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              {/* Uniform Image */}
-              <div className="aspect-square overflow-hidden bg-muted">
-                <img 
-                  src={uniformGirls} 
-                  alt="Girls school uniform with white blouse, green skirt and hijab"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              
               <div className="p-6">
                 <ul className="space-y-2">
                   {girlsItems.map((item) => (
