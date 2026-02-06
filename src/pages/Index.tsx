@@ -9,6 +9,7 @@ import UniformSection from "@/components/UniformSection";
 import RequirementsSection from "@/components/RequirementsSection";
 import GallerySection from "@/components/GallerySection";
 import HeadmasterSection from "@/components/HeadmasterSection";
+import StudentsSlider from "@/components/StudentsSlider";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 
@@ -27,6 +28,7 @@ const Index = () => {
         <RequirementsSection />
         <GallerySection />
         <HeadmasterSection />
+        <StudentsSlider />
         <ContactSection />
       </main>
       <Footer />
