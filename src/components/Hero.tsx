@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { MapPin, BookOpen, Star } from "lucide-react";
 
 const Hero = () => {
