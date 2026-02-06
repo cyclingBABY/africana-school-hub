@@ -110,27 +110,32 @@ const UniformSection = () => {
                 Boys Uniform
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-6">
-              <ul className="space-y-2">
-                {boysItems.map((item) => (
-                  <li key={item} className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-primary" />
-                    <span className="text-foreground">{item}</span>
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-4 pt-4 border-t border-border">
-                <p className="text-sm font-medium text-muted-foreground mb-2">
-                  Boarding students also receive:
-                </p>
-                <ul className="space-y-1">
-                  {boysBoardingExtra.map((item) => (
-                    <li key={item} className="flex items-center gap-2 text-sm">
-                      <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+            <CardContent className="p-0">
+              {/* 3D Model */}
+              <UniformModel type="boys" />
+              
+              <div className="p-6">
+                <ul className="space-y-2">
+                  {boysItems.map((item) => (
+                    <li key={item} className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-primary" />
                       <span className="text-foreground">{item}</span>
                     </li>
                   ))}
                 </ul>
+                <div className="mt-4 pt-4 border-t border-border">
+                  <p className="text-sm font-medium text-muted-foreground mb-2">
+                    Boarding students also receive:
+                  </p>
+                  <ul className="space-y-1">
+                    {boysBoardingExtra.map((item) => (
+                      <li key={item} className="flex items-center gap-2 text-sm">
+                        <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+                        <span className="text-foreground">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </CardContent>
           </Card>
