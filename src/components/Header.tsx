@@ -1,18 +1,20 @@
-import { Link } from "react-router-dom";
-import { Menu, X, Phone, Mail, UserCog } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { Menu, X, Phone, Mail, UserCog, Newspaper } from "lucide-react";
 import { useState } from "react";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
 
   const navLinks = [
-    { label: "Home", href: "#home" },
-    { label: "Admission", href: "#admission" },
-    { label: "Fees", href: "#fees" },
-    { label: "Uniforms", href: "#uniforms" },
-    { label: "Requirements", href: "#requirements" },
-    { label: "Gallery", href: "#gallery" },
-    { label: "Contact", href: "#contact" },
+    { label: "Home", href: isHomePage ? "#home" : "/" },
+    { label: "Admission", href: isHomePage ? "#admission" : "/#admission" },
+    { label: "Fees", href: isHomePage ? "#fees" : "/#fees" },
+    { label: "Uniforms", href: isHomePage ? "#uniforms" : "/#uniforms" },
+    { label: "Requirements", href: isHomePage ? "#requirements" : "/#requirements" },
+    { label: "Gallery", href: isHomePage ? "#gallery" : "/#gallery" },
+    { label: "Contact", href: isHomePage ? "#contact" : "/#contact" },
   ];
 
   return (
@@ -51,13 +53,20 @@ const Header = () => {
           <div className="hidden lg:flex items-center gap-6">
             {navLinks.map((link) => (
               <a
-                key={link.href}
+                key={link.label}
                 href={link.href}
                 className="text-foreground hover:text-primary font-medium transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-accent hover:after:w-full after:transition-all"
               >
                 {link.label}
               </a>
             ))}
+            <Link
+              to="/news"
+              className="flex items-center gap-1 text-foreground hover:text-primary font-medium transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-accent hover:after:w-full after:transition-all"
+            >
+              <Newspaper className="w-4 h-4" />
+              News
+            </Link>
             <Link
               to="/auth"
               className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:opacity-90 transition-all text-sm font-medium"
@@ -82,7 +91,7 @@ const Header = () => {
             <div className="flex flex-col gap-4">
               {navLinks.map((link) => (
                 <a
-                  key={link.href}
+                  key={link.label}
                   href={link.href}
                   onClick={() => setIsMenuOpen(false)}
                   className="text-foreground hover:text-primary font-medium transition-colors"
@@ -90,6 +99,14 @@ const Header = () => {
                   {link.label}
                 </a>
               ))}
+              <Link
+                to="/news"
+                onClick={() => setIsMenuOpen(false)}
+                className="flex items-center gap-2 text-foreground hover:text-primary font-medium transition-colors"
+              >
+                <Newspaper className="w-4 h-4" />
+                News & Events
+              </Link>
             </div>
           </div>
         )}

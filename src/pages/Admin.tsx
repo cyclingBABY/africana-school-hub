@@ -1,155 +1,97 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { User } from "@supabase/supabase-js";
 import { 
   LayoutDashboard, 
   FileText, 
-  Users, 
   LogOut, 
   Menu,
-  Edit3,
-  Crown
+  Newspaper,
+  Crown,
+  Image,
+  Layers
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import ApplicationsList from "@/components/admin/ApplicationsList";
-import StaffManagement from "@/components/admin/StaffManagement";
 import DashboardStats from "@/components/admin/DashboardStats";
 import ContentManagement from "@/components/admin/ContentManagement";
+import MediaManagement from "@/components/admin/MediaManagement";
+import SliderManagement from "@/components/admin/SliderManagement";
 import { Badge } from "@/components/ui/badge";
 
-type TabType = "dashboard" | "applications" | "staff" | "content";
-
-interface StaffMember {
-  id: string;
-  full_name: string;
-  role: 'admin' | 'staff' | 'super_admin';
-  status: 'pending' | 'approved' | 'blocked';
-  email?: string;
-  school_position?: string | null;
-}
+type TabType = "dashboard" | "applications" | "content" | "media" | "sliders";
 
 const Admin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [user, setUser] = useState<User | null>(null);
-  const [staffMember, setStaffMember] = useState<StaffMember | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabType>("dashboard");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [adminName, setAdminName] = useState("");
+  const [staffId, setStaffId] = useState<string | null>(null);
 
   useEffect(() => {
-    let isMounted = true;
-
-    const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+    const checkAuthAndFetchStaff = async () => {
+      // Check if logged in via localStorage
+      const isLoggedIn = localStorage.getItem("admin_logged_in") === "true";
+      const adminEmail = localStorage.getItem("admin_email");
       
-      if (!isMounted) return;
-
-      if (!session) {
-        navigate('/auth');
+      if (!isLoggedIn) {
+        navigate("/auth");
         return;
       }
-
-      setUser(session.user);
-      await fetchStaffMember(session.user);
-    };
-
-    checkUser();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (!isMounted) return;
+      
+      setAdminName(localStorage.getItem("admin_name") || "Super Admin");
+      
+      // Fetch staff member ID from database (case-insensitive)
+      if (adminEmail) {
+        const { data: staffData, error } = await supabase
+          .from('staff_members')
+          .select('id')
+          .ilike('email', adminEmail)
+          .maybeSingle();
         
-        if (event === 'SIGNED_OUT' || !session) {
-          setUser(null);
-          setStaffMember(null);
-          navigate('/auth');
-        } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-          if (session) {
-            setUser(session.user);
-            await fetchStaffMember(session.user);
+        if (staffData) {
+          setStaffId(staffData.id);
+        } else {
+          // If no staff record, create one for the super admin
+          const { data: newStaff } = await supabase
+            .from('staff_members')
+            .insert({
+              email: adminEmail.toLowerCase(),
+              full_name: 'Super Admin',
+              role: 'super_admin',
+              status: 'approved',
+              user_id: '00000000-0000-0000-0000-000000000001'
+            })
+            .select('id')
+            .single();
+          
+          if (newStaff) {
+            setStaffId(newStaff.id);
           }
         }
       }
-    );
-
-    return () => {
-      isMounted = false;
-      subscription.unsubscribe();
+      
+      setIsLoading(false);
     };
+    
+    checkAuthAndFetchStaff();
   }, [navigate]);
 
-  const fetchStaffMember = async (currentUser: User) => {
-    try {
-      const { data, error } = await supabase
-        .from('staff_members')
-        .select('*')
-        .eq('user_id', currentUser.id)
-        .maybeSingle();
-
-      if (error) throw error;
-
-      // Handle Supreme Admin bypass (if no record exists but email matches)
-      const SUPREME_EMAIL = "africanamuslim_code5_creations@gmail.com";
-      
-      if (!data) {
-        if (currentUser.email === SUPREME_EMAIL) {
-          // Auto-create or use a temporary staff object for supreme admin
-          const supremeStaff: StaffMember = {
-            id: '00000000-0000-0000-0000-000000000000',
-            full_name: 'Super Admin',
-            role: 'super_admin',
-            status: 'approved'
-          };
-          setStaffMember(supremeStaff);
-          setIsLoading(false);
-          return;
-        }
-
-        toast({
-          title: "Access Denied",
-          description: "You are not a registered staff member.",
-          variant: "destructive",
-        });
-        await supabase.auth.signOut();
-        return;
-      }
-
-      if (data.status === 'pending') {
-        toast({
-          title: "Pending Approval",
-          description: "Your account is pending approval.",
-        });
-        await supabase.auth.signOut();
-        return;
-      }
-
-      if (data.status === 'blocked') {
-        toast({
-          title: "Account Blocked",
-          description: "Your account has been blocked.",
-          variant: "destructive",
-        });
-        await supabase.auth.signOut();
-        return;
-      }
-
-      setStaffMember(data as StaffMember);
-    } catch (err: any) {
-      console.error("Error fetching staff member:", err);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleLogout = () => {
+    localStorage.removeItem("admin_logged_in");
+    localStorage.removeItem("admin_email");
+    localStorage.removeItem("admin_name");
+    
+    toast({
+      title: "Logged Out",
+      description: "You have been logged out successfully.",
+    });
+    
+    navigate("/");
   };
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate('/');
-  };
-
-  const isSuperAdmin = staffMember?.role === 'super_admin';
 
   if (isLoading) {
     return (
@@ -162,27 +104,10 @@ const Admin = () => {
   const navItems = [
     { id: "dashboard" as TabType, label: "Dashboard", icon: LayoutDashboard },
     { id: "applications" as TabType, label: "Applications", icon: FileText },
-    { id: "content" as TabType, label: "Content", icon: Edit3 },
-    ...(isSuperAdmin 
-      ? [{ id: "staff" as TabType, label: "Staff Management", icon: Users }] 
-      : []),
+    { id: "media" as TabType, label: "Media", icon: Image },
+    { id: "sliders" as TabType, label: "Sliders", icon: Layers },
+    { id: "content" as TabType, label: "News & Events", icon: Newspaper },
   ];
-
-  const getRoleBadge = () => {
-    switch (staffMember?.role) {
-      case 'super_admin':
-        return (
-          <Badge className="bg-amber-500 text-white">
-            <Crown className="w-3 h-3 mr-1" />
-            Super Admin
-          </Badge>
-        );
-      case 'admin':
-        return <Badge className="bg-primary">Admin</Badge>;
-      default:
-        return <Badge variant="secondary">Staff</Badge>;
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -244,9 +169,12 @@ const Admin = () => {
           {/* User Info & Logout */}
           <div className="p-4 border-t border-border">
             <div className="mb-4 px-4">
-              <p className="font-medium text-foreground truncate">{staffMember?.full_name}</p>
+              <p className="font-medium text-foreground truncate">{adminName}</p>
               <div className="mt-1">
-                {getRoleBadge()}
+                <Badge className="bg-amber-500 text-white">
+                  <Crown className="w-3 h-3 mr-1" />
+                  Super Admin
+                </Badge>
               </div>
             </div>
             <Button
@@ -279,11 +207,19 @@ const Admin = () => {
         {/* Content */}
         <main className="flex-1 p-4 md:p-6 overflow-auto">
           {activeTab === "dashboard" && <DashboardStats />}
-          {activeTab === "applications" && <ApplicationsList staffId={staffMember?.id || ''} />}
-          {activeTab === "content" && staffMember && (
-            <ContentManagement staffId={staffMember.id} isSuperAdmin={isSuperAdmin} />
+          {activeTab === "applications" && staffId && <ApplicationsList staffId={staffId} />}
+          {activeTab === "applications" && !staffId && (
+            <div className="text-center py-12 text-muted-foreground">Loading staff data...</div>
           )}
-          {activeTab === "staff" && isSuperAdmin && <StaffManagement />}
+          {activeTab === "media" && <MediaManagement />}
+          {activeTab === "sliders" && <SliderManagement />}
+          {activeTab === "content" && staffId && <ContentManagement staffId={staffId} isSuperAdmin={true} />}
+          {activeTab === "content" && !staffId && (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading staff data...</p>
+            </div>
+          )}
         </main>
       </div>
     </div>

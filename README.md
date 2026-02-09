@@ -1,8 +1,31 @@
-# Welcome to your Lovable project
+# Africana Muslim Secondary School Hub
+
+A modern web application for managing school admissions, staff portal, and administrative tasks.
 
 ## Project info
 
 **URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+
+## Supabase Integration
+
+This project is connected to Supabase for backend services including:
+- Authentication (Staff login/registration)
+- Database (Applications, Staff Members, Notes)
+- Storage (Application documents)
+
+### Setup Instructions
+
+1. **Environment Variables**: Copy `.env.example` to `.env` and fill in your Supabase credentials:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Get Supabase Credentials**:
+   - Visit your [Supabase Dashboard](https://supabase.com/dashboard/project/tjlsziiovzcbekhstouc/settings/api)
+   - Copy the Project URL and anon/public key
+   - Update the `.env` file with these values
+
+3. **Database Migrations**: The database schema is already set up with migrations in the `supabase/migrations` folder.
 
 ## How can I edit this code?
 
@@ -70,10 +93,10 @@ Yes, you can!
 
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
-https://nmzauowbundwdrddudpl.supabase.co
+## Features
 
-
-
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
-
-eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5temF1b3didW5kd2RyZGR1ZHBsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA2NTY3NjUsImV4cCI6MjA4NjIzMjc2NX0.XvLwF55wArx-bhDUfV8p8kpjjkjoYe3l10CBvqEcB-8
+- **Public Website**: School information, gallery, and admission details
+- **Application System**: Online application form for new students
+- **Staff Portal**: Authentication and role-based access
+- **Admin Dashboard**: Manage applications, staff, and content
+- **Supabase Backend**: Secure authentication and data management

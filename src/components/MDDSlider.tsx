@@ -1,43 +1,31 @@
 import { useState, useEffect, useCallback } from "react";
-import { ChevronLeft, ChevronRight, Users } from "lucide-react";
+import { ChevronLeft, ChevronRight, Music } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AnimatedSection from "./AnimatedSection";
 import { useSiteMedia } from "@/hooks/useSiteMedia";
 
-// Fallback static images
-import students1 from "@/assets/students-1.jpg";
-import students2 from "@/assets/students-2.jpg";
-import students3 from "@/assets/students-3.jpg";
-import students4 from "@/assets/students-4.jpg";
-
-const fallbackImages = [
-  { src: students1, alt: "Students with EAC flag", caption: "East African Community Pride" },
-  { src: students2, alt: "Students in Islamic attire", caption: "Cultural Heritage" },
-  { src: students3, alt: "Students on campus", caption: "Campus Life" },
-  { src: students4, alt: "Students at event", caption: "Community Engagement" },
-];
-
-const StudentsSlider = () => {
+const MDDSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const { media: studentsMedia, isLoading } = useSiteMedia("campus");
+  const { media: mddMedia, isLoading } = useSiteMedia("mdd");
 
-  // Use database images or fallback
-  const studentImages = studentsMedia.length > 0
-    ? studentsMedia.map(img => ({
+  const mddImages = mddMedia.length > 0
+    ? mddMedia.map(img => ({
         src: img.file_url,
         alt: img.title,
         caption: img.title,
       }))
-    : fallbackImages;
+    : [];
 
   const nextSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev + 1) % studentImages.length);
-  }, [studentImages.length]);
+    if (mddImages.length === 0) return;
+    setCurrentSlide((prev) => (prev + 1) % mddImages.length);
+  }, [mddImages.length]);
 
   const prevSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev - 1 + studentImages.length) % studentImages.length);
-  }, [studentImages.length]);
+    if (mddImages.length === 0) return;
+    setCurrentSlide((prev) => (prev - 1 + mddImages.length) % mddImages.length);
+  }, [mddImages.length]);
 
   const goToSlide = (index: number) => {
     setCurrentSlide(index);
@@ -46,52 +34,77 @@ const StudentsSlider = () => {
   };
 
   useEffect(() => {
-    if (!isAutoPlaying || studentImages.length === 0) return;
+    if (!isAutoPlaying || mddImages.length === 0) return;
     const interval = setInterval(nextSlide, 4000);
     return () => clearInterval(interval);
-  }, [isAutoPlaying, nextSlide, studentImages.length]);
+  }, [isAutoPlaying, nextSlide, mddImages.length]);
 
   useEffect(() => {
-    if (currentSlide >= studentImages.length) {
+    if (currentSlide >= mddImages.length && mddImages.length > 0) {
       setCurrentSlide(0);
     }
-  }, [studentImages.length, currentSlide]);
+  }, [mddImages.length, currentSlide]);
 
   if (isLoading) {
     return (
-      <section className="py-16 bg-muted/30">
+      <section className="py-16 bg-card">
         <div className="container mx-auto px-4">
           <div className="text-center mb-10">
             <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground">
-              Our Students
+              Music, Dance & Drama
             </h2>
           </div>
-          <div className="max-w-4xl mx-auto h-[450px] md:h-[600px] bg-muted animate-pulse rounded-2xl" />
+          <div className="max-w-5xl mx-auto h-[400px] md:h-[500px] bg-muted animate-pulse rounded-2xl" />
         </div>
       </section>
     );
   }
 
-  if (studentImages.length === 0) return null;
+  if (mddImages.length === 0) {
+    return (
+      <section className="py-16 bg-card">
+        <div className="container mx-auto px-4">
+          <AnimatedSection className="text-center mb-10">
+            <div className="inline-flex items-center gap-2 mb-4">
+              <Music className="h-8 w-8 text-primary" />
+              <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground">
+                Music, Dance & Drama
+              </h2>
+              <Music className="h-8 w-8 text-primary" />
+            </div>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Celebrating creativity and talent through performing arts at Africana Muslim Secondary School
+            </p>
+          </AnimatedSection>
+          <AnimatedSection animation="scale" className="max-w-5xl mx-auto">
+            <div className="h-[300px] md:h-[400px] rounded-2xl bg-muted/50 border-2 border-dashed border-muted-foreground/20 flex items-center justify-center">
+              <p className="text-muted-foreground text-lg">Photos coming soon...</p>
+            </div>
+          </AnimatedSection>
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <section className="py-16 bg-muted/30">
+    <section className="py-16 bg-card">
       <div className="container mx-auto px-4">
         <AnimatedSection className="text-center mb-10">
           <div className="inline-flex items-center gap-2 mb-4">
-            <Users className="h-8 w-8 text-primary" />
+            <Music className="h-8 w-8 text-primary" />
             <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground">
-              Our Students
+              Music, Dance & Drama
             </h2>
+            <Music className="h-8 w-8 text-primary" />
           </div>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Meet the vibrant community of learners who make Africana Muslim Secondary School special
+            Celebrating creativity and talent through performing arts at Africana Muslim Secondary School
           </p>
         </AnimatedSection>
 
-        <AnimatedSection animation="scale" className="relative max-w-4xl mx-auto">
-          <div className="relative h-[450px] md:h-[600px] rounded-2xl overflow-hidden shadow-2xl bg-muted">
-            {studentImages.map((image, index) => (
+        <AnimatedSection animation="scale" className="relative max-w-5xl mx-auto">
+          <div className="relative h-[400px] md:h-[500px] rounded-2xl overflow-hidden shadow-2xl">
+            {mddImages.map((image, index) => (
               <div
                 key={index}
                 className={`absolute inset-0 transition-all duration-700 ease-in-out ${
@@ -103,9 +116,9 @@ const StudentsSlider = () => {
                 <img
                   src={image.src}
                   alt={image.alt}
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-foreground/70 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-transparent to-transparent" />
                 <div className="absolute bottom-6 left-6 right-6">
                   <span className="inline-block px-4 py-2 bg-primary text-primary-foreground font-semibold rounded-lg">
                     {image.caption}
@@ -141,7 +154,7 @@ const StudentsSlider = () => {
           </div>
 
           <div className="flex justify-center gap-3 mt-6">
-            {studentImages.map((_, index) => (
+            {mddImages.map((_, index) => (
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
@@ -160,4 +173,4 @@ const StudentsSlider = () => {
   );
 };
 
-export default StudentsSlider;
+export default MDDSlider;

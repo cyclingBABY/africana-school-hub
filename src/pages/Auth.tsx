@@ -4,7 +4,6 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, ArrowLeft } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -16,224 +15,72 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
-// --- SUPREME ADMIN CREDENTIALS ---
-const SUPREME_ADMIN = {
-  email: "africanamuslim_code5_creations@gmail.com",
-  password: "admin.africana.2026",
-  fullName: "Super Admin"
-};
 
 const loginSchema = z.object({
   email: z.string().email("Valid email is required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
-const signupSchema = z.object({
-  fullName: z.string().min(2, "Full name is required").max(100),
-  email: z.string().email("Valid email is required"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  confirmPassword: z.string(),
-  schoolPosition: z.string().min(2, "Please select or enter your role"),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+// Hardcoded Super Admin credentials
+const ADMIN_EMAIL = "africanamuslim_code5_creations@gmail.com";
+const ADMIN_PASSWORD = "admin.africana.2026";
 
 type LoginFormData = z.infer<typeof loginSchema>;
-type SignupFormData = z.infer<typeof signupSchema>;
-
-const schoolPositions = [
-  "Teacher",
-  "Head Teacher",
-  "Deputy Head Teacher",
-  "Bursar",
-  "Secretary",
-  "Librarian",
-  "Laboratory Technician",
-  "IT Administrator",
-  "Counselor",
-  "Other",
-];
 
 const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState("login");
-  const [customPosition, setCustomPosition] = useState("");
+
+  useEffect(() => {
+    // Check if already logged in
+    const isLoggedIn = localStorage.getItem("admin_logged_in") === "true";
+    if (isLoggedIn) {
+      navigate("/admin");
+    }
+  }, [navigate]);
 
   const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
 
-  const signupForm = useForm<SignupFormData>({
-    resolver: zodResolver(signupSchema),
-    defaultValues: { fullName: "", email: "", password: "", confirmPassword: "", schoolPosition: "" },
-  });
-
-  const selectedPosition = signupForm.watch("schoolPosition");
-
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        if (session?.user) {
-          // Check if the logged-in user is the supreme admin by email
-          if (session.user.email === SUPREME_ADMIN.email) {
-            navigate('/admin');
-          } else {
-            checkStaffStatus(session.user.id);
-          }
-        }
-      }
-    );
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  const checkStaffStatus = async (userId: string) => {
-    const { data } = await supabase
-      .from('staff_members')
-      .select('id, status')
-      .eq('user_id', userId)
-      .maybeSingle();
-    
-    if (data) {
-      if (data.status === 'approved') {
-        navigate('/admin');
-      } else if (data.status === 'pending') {
-        toast({
-          title: "Pending Approval",
-          description: "Your account is pending approval from the Super Admin.",
-        });
-      } else if (data.status === 'blocked') {
-        toast({
-          title: "Account Blocked",
-          description: "Your account has been blocked.",
-          variant: "destructive",
-        });
-        await supabase.auth.signOut();
-      }
-    }
-  };
-
   const onLogin = async (data: LoginFormData) => {
     setIsLoading(true);
-    try {
-      // Normal login
-      const { data: authData, error } = await supabase.auth.signInWithPassword({
-        email: data.email,
-        password: data.password,
+    
+    // Simulate a small delay for UX
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    if (data.email.toLowerCase() === ADMIN_EMAIL && data.password === ADMIN_PASSWORD) {
+      localStorage.setItem("admin_logged_in", "true");
+      localStorage.setItem("admin_email", data.email);
+      localStorage.setItem("admin_name", "Super Admin");
+      
+      toast({
+        title: "Login Successful",
+        description: "Welcome, Super Admin!",
       });
-
-      if (error) throw error;
-
-      // Ensure Supreme Admin has a record in staff_members
-      if (data.email === SUPREME_ADMIN.email && authData.user) {
-        const { data: staffData } = await supabase
-          .from('staff_members')
-          .select('id')
-          .eq('user_id', authData.user.id)
-          .maybeSingle();
-
-        if (!staffData) {
-          await supabase.from('staff_members').insert({
-            user_id: authData.user.id,
-            email: data.email,
-            full_name: SUPREME_ADMIN.fullName,
-            role: 'super_admin',
-            status: 'approved',
-            school_position: 'Head of Operations'
-          });
-        }
-        
-        toast({
-          title: "Supreme Access Granted",
-          description: `Welcome back, ${SUPREME_ADMIN.fullName}`,
-        });
-      }
-
-    } catch (error: any) {
+      
+      navigate("/admin");
+    } else {
       toast({
         title: "Login Failed",
-        description: error.message || "Invalid credentials",
+        description: "Invalid email or password",
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
     }
-  };
-
-  const onSignup = async (data: SignupFormData) => {
-    setIsLoading(true);
-    try {
-      const redirectUrl = `${window.location.origin}/admin`;
-      
-      const { data: authData, error } = await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            full_name: data.fullName,
-          },
-        },
-      });
-
-      if (error) throw error;
-
-      if (authData.user) {
-        const position = data.schoolPosition === "Other" ? customPosition : data.schoolPosition;
-        
-        await supabase
-          .from('staff_members')
-          .insert({
-            user_id: authData.user.id,
-            email: data.email,
-            full_name: data.fullName,
-            role: 'staff',
-            status: 'pending',
-            school_position: position,
-          });
-      }
-      
-      toast({
-        title: "Registration Submitted",
-        description: "Your registration is pending approval.",
-      });
-
-      setActiveTab("login");
-      signupForm.reset();
-    } catch (error: any) {
-      toast({
-        title: "Signup Failed",
-        description: error.message || "Please try again",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    
+    setIsLoading(false);
   };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <header className="bg-primary text-primary-foreground py-4">
         <div className="container mx-auto px-4">
-          <button onClick={() => navigate("/")} className="flex items-center gap-2 hover:text-accent transition-colors">
+          <button
+            onClick={() => navigate("/")}
+            className="flex items-center gap-2 hover:text-accent transition-colors"
+          >
             <ArrowLeft className="w-5 h-5" />
             <span>Back to Homepage</span>
           </button>
@@ -246,148 +93,55 @@ const Auth = () => {
             <div className="w-16 h-16 rounded-full hero-gradient flex items-center justify-center mx-auto mb-4">
               <span className="text-primary-foreground font-serif font-bold text-2xl">A</span>
             </div>
-            <h1 className="font-serif text-2xl font-bold text-foreground">Staff Portal</h1>
-            <p className="text-muted-foreground mt-2">Africana Muslim Secondary School</p>
+            <h1 className="font-serif text-2xl font-bold text-foreground">
+              Admin Login
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              Africana Muslim Secondary School
+            </p>
           </div>
 
           <div className="bg-card rounded-xl p-6 shadow-lg border border-border">
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="signup">Register</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="login" className="mt-6">
-                <Form {...loginForm}>
-                  <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-4">
-                    <FormField
-                      control={loginForm.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input type="email" placeholder="Enter your email" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={loginForm.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Password</FormLabel>
-                          <FormControl>
-                            <Input type="password" placeholder="Enter your password" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button type="submit" className="w-full" disabled={isLoading}>
-                      {isLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : "Login"}
-                    </Button>
-                  </form>
-                </Form>
-              </TabsContent>
-
-              <TabsContent value="signup" className="mt-6">
-                <Form {...signupForm}>
-                  <form onSubmit={signupForm.handleSubmit(onSignup)} className="space-y-4">
-                    <FormField
-                      control={signupForm.control}
-                      name="fullName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Full Name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter your full name" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={signupForm.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input type="email" placeholder="Enter your email" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={signupForm.control}
-                      name="schoolPosition"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Role in School</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select your role" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {schoolPositions.map((p) => (
-                                <SelectItem key={p} value={p}>{p}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    {selectedPosition === "Other" && (
-                      <div className="space-y-2">
-                        <FormLabel>Specify Your Role</FormLabel>
-                        <Input 
-                          placeholder="e.g. Accountant, Driver"
-                          value={customPosition} 
-                          onChange={(e) => setCustomPosition(e.target.value)} 
-                          required
-                        />
-                      </div>
-                    )}
-                    <FormField
-                      control={signupForm.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Password</FormLabel>
-                          <FormControl>
-                            <Input type="password" placeholder="Create a password" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={signupForm.control}
-                      name="confirmPassword"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Confirm Password</FormLabel>
-                          <FormControl>
-                            <Input type="password" placeholder="Confirm your password" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button type="submit" className="w-full" disabled={isLoading}>
-                      {isLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : "Submit Registration"}
-                    </Button>
-                  </form>
-                </Form>
-              </TabsContent>
-            </Tabs>
+            <Form {...loginForm}>
+              <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-4">
+                <FormField
+                  control={loginForm.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input type="email" placeholder="Enter your email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={loginForm.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input type="password" placeholder="Enter your password" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Logging in...
+                    </>
+                  ) : (
+                    "Login"
+                  )}
+                </Button>
+              </form>
+            </Form>
           </div>
         </div>
       </main>

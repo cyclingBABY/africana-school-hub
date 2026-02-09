@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PlusCircle, Trash2, Edit, Eye, EyeOff, Image, Upload, Video, X, FolderOpen } from "lucide-react";
@@ -29,6 +30,13 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Post {
   id: string;
@@ -39,6 +47,8 @@ interface Post {
   is_published: boolean;
   created_at: string;
   updated_at: string;
+  category: string | null;
+  display_order: number | null;
   author?: {
     full_name: string;
   };
@@ -51,12 +61,23 @@ interface MediaItem {
   file_type: string;
 }
 
-interface ContentManagementProps {
+interface PostsManagementProps {
   staffId: string;
   isSuperAdmin: boolean;
+  onUpdate: () => void;
 }
 
-const ContentManagement = ({ staffId, isSuperAdmin }: ContentManagementProps) => {
+const categories = [
+  { value: "school_trip", label: "School Trip" },
+  { value: "sports", label: "Sports" },
+  { value: "students", label: "Students" },
+  { value: "gallery", label: "Gallery" },
+  { value: "general", label: "General" },
+  { value: "hero", label: "Hero" },
+  { value: "features", label: "Features" },
+];
+
+const PostsManagement = ({ staffId, isSuperAdmin, onUpdate }: PostsManagementProps) => {
   const { toast } = useToast();
   const [posts, setPosts] = useState<Post[]>([]);
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
@@ -72,6 +93,8 @@ const ContentManagement = ({ staffId, isSuperAdmin }: ContentManagementProps) =>
     content: "",
     image_url: "",
     is_published: false,
+    category: "general",
+    display_order: 0,
   });
 
   useEffect(() => {
@@ -105,7 +128,6 @@ const ContentManagement = ({ staffId, isSuperAdmin }: ContentManagementProps) =>
       `)
       .order('created_at', { ascending: false });
 
-    // If not super admin, only fetch own posts
     if (!isSuperAdmin) {
       query = query.eq('author_id', staffId);
     }
@@ -173,13 +195,11 @@ const ContentManagement = ({ staffId, isSuperAdmin }: ContentManagementProps) =>
     let imageUrl = formData.image_url;
 
     try {
-      // Upload file if selected
       if (uploadedFile) {
         imageUrl = await uploadFile(uploadedFile) || "";
       }
 
       if (editingPost) {
-        // Update existing post
         const { error } = await supabase
           .from('posts')
           .update({
@@ -187,18 +207,18 @@ const ContentManagement = ({ staffId, isSuperAdmin }: ContentManagementProps) =>
             content: formData.content,
             image_url: imageUrl || null,
             is_published: formData.is_published,
+            category: formData.category as any,
+            display_order: formData.display_order,
           })
           .eq('id', editingPost.id);
 
-        if (error) {
-          throw error;
-        }
+        if (error) throw error;
+        
         toast({
           title: "Post Updated",
           description: "Your post has been updated successfully",
         });
       } else {
-        // Create new post
         const { error } = await supabase
           .from('posts')
           .insert({
@@ -207,18 +227,21 @@ const ContentManagement = ({ staffId, isSuperAdmin }: ContentManagementProps) =>
             image_url: imageUrl || null,
             author_id: staffId,
             is_published: formData.is_published,
+            category: formData.category as any,
+            display_order: formData.display_order,
           });
 
-        if (error) {
-          throw error;
-        }
+        if (error) throw error;
+        
         toast({
           title: "Post Created",
           description: "Your post has been created successfully",
         });
       }
+      
       resetForm();
       fetchPosts();
+      onUpdate();
     } catch (error: any) {
       toast({
         title: "Error",
@@ -237,6 +260,8 @@ const ContentManagement = ({ staffId, isSuperAdmin }: ContentManagementProps) =>
       content: post.content,
       image_url: post.image_url || "",
       is_published: post.is_published,
+      category: post.category || "general",
+      display_order: post.display_order || 0,
     });
     setUploadedFile(null);
     setPreviewUrl(post.image_url || null);
@@ -274,6 +299,7 @@ const ContentManagement = ({ staffId, isSuperAdmin }: ContentManagementProps) =>
         description: "The post has been deleted",
       });
       fetchPosts();
+      onUpdate();
     }
   };
 
@@ -299,7 +325,14 @@ const ContentManagement = ({ staffId, isSuperAdmin }: ContentManagementProps) =>
   };
 
   const resetForm = () => {
-    setFormData({ title: "", content: "", image_url: "", is_published: false });
+    setFormData({ 
+      title: "", 
+      content: "", 
+      image_url: "", 
+      is_published: false,
+      category: "general",
+      display_order: 0,
+    });
     setEditingPost(null);
     setIsDialogOpen(false);
     setUploadedFile(null);
@@ -320,13 +353,7 @@ const ContentManagement = ({ staffId, isSuperAdmin }: ContentManagementProps) =>
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between gap-4">
-        <div>
-          <h2 className="font-serif text-2xl font-bold text-foreground mb-2">News & Events</h2>
-          <p className="text-muted-foreground">
-            {isSuperAdmin ? "Create and manage news, events, and announcements for the public website" : "Manage your news and announcements"}
-          </p>
-        </div>
+      <div className="flex justify-end">
         <Dialog open={isDialogOpen} onOpenChange={(open) => {
           setIsDialogOpen(open);
           if (!open) resetForm();
@@ -334,10 +361,10 @@ const ContentManagement = ({ staffId, isSuperAdmin }: ContentManagementProps) =>
           <DialogTrigger asChild>
             <Button>
               <PlusCircle className="w-4 h-4 mr-2" />
-              New News/Event
+              New Post
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingPost ? "Edit Post" : "Create New Post"}</DialogTitle>
             </DialogHeader>
@@ -358,6 +385,31 @@ const ContentManagement = ({ staffId, isSuperAdmin }: ContentManagementProps) =>
                   onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                   rows={6}
                 />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Category</Label>
+                  <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat.value} value={cat.value}>
+                          {cat.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Display Order</Label>
+                  <Input
+                    type="number"
+                    value={formData.display_order}
+                    onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })}
+                  />
+                </div>
               </div>
               <div>
                 <Label>Image/Video</Label>
@@ -430,7 +482,6 @@ const ContentManagement = ({ staffId, isSuperAdmin }: ContentManagementProps) =>
                   </TabsContent>
                 </Tabs>
                 
-                {/* Preview */}
                 {(previewUrl || uploadedFile) && (
                   <div className="mt-3 relative">
                     <div className="rounded-lg overflow-hidden border border-border">
@@ -537,6 +588,11 @@ const ContentManagement = ({ staffId, isSuperAdmin }: ContentManagementProps) =>
                             </>
                           )}
                         </Badge>
+                        {post.category && (
+                          <Badge variant="outline" className="capitalize">
+                            {post.category.replace('_', ' ')}
+                          </Badge>
+                        )}
                       </div>
                     </div>
                     <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
@@ -609,4 +665,4 @@ const ContentManagement = ({ staffId, isSuperAdmin }: ContentManagementProps) =>
   );
 };
 
-export default ContentManagement;
+export default PostsManagement;
