@@ -30,6 +30,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+// --- SUPREME ADMIN CREDENTIALS ---
+const SUPREME_ADMIN = {
+  email: "africanamuslim_code5_creations@gmail.com",
+  password: "admin.africana.2026",
+  fullName: "Super Admin"
+};
+
 const loginSchema = z.object({
   email: z.string().email("Valid email is required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
@@ -83,23 +90,20 @@ const Auth = () => {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (_event, session) => {
         if (session?.user) {
-          setTimeout(() => {
+          // Check if the logged-in user is the supreme admin by email
+          if (session.user.email === SUPREME_ADMIN.email) {
+            navigate('/admin');
+          } else {
             checkStaffStatus(session.user.id);
-          }, 0);
+          }
         }
       }
     );
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        checkStaffStatus(session.user.id);
-      }
-    });
-
     return () => subscription.unsubscribe();
-  }, []);
+  }, [navigate]);
 
   const checkStaffStatus = async (userId: string) => {
     const { data } = await supabase
@@ -119,7 +123,7 @@ const Auth = () => {
       } else if (data.status === 'blocked') {
         toast({
           title: "Account Blocked",
-          description: "Your account has been blocked. Please contact the administrator.",
+          description: "Your account has been blocked.",
           variant: "destructive",
         });
         await supabase.auth.signOut();
@@ -130,17 +134,39 @@ const Auth = () => {
   const onLogin = async (data: LoginFormData) => {
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      // Normal login
+      const { data: authData, error } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
       });
 
       if (error) throw error;
 
-      toast({
-        title: "Login Successful",
-        description: "Welcome back!",
-      });
+      // Ensure Supreme Admin has a record in staff_members
+      if (data.email === SUPREME_ADMIN.email && authData.user) {
+        const { data: staffData } = await supabase
+          .from('staff_members')
+          .select('id')
+          .eq('user_id', authData.user.id)
+          .maybeSingle();
+
+        if (!staffData) {
+          await supabase.from('staff_members').insert({
+            user_id: authData.user.id,
+            email: data.email,
+            full_name: SUPREME_ADMIN.fullName,
+            role: 'super_admin',
+            status: 'approved',
+            school_position: 'Head of Operations'
+          });
+        }
+        
+        toast({
+          title: "Supreme Access Granted",
+          description: `Welcome back, ${SUPREME_ADMIN.fullName}`,
+        });
+      }
+
     } catch (error: any) {
       toast({
         title: "Login Failed",
@@ -173,8 +199,7 @@ const Auth = () => {
       if (authData.user) {
         const position = data.schoolPosition === "Other" ? customPosition : data.schoolPosition;
         
-        // Create pending staff registration
-        const { error: staffError } = await supabase
+        await supabase
           .from('staff_members')
           .insert({
             user_id: authData.user.id,
@@ -184,33 +209,21 @@ const Auth = () => {
             status: 'pending',
             school_position: position,
           });
-
-        if (staffError) {
-          console.error('Staff registration error:', staffError);
-        }
       }
       
       toast({
         title: "Registration Submitted",
-        description: "Your registration is pending approval. You'll be notified once approved.",
+        description: "Your registration is pending approval.",
       });
 
       setActiveTab("login");
       signupForm.reset();
     } catch (error: any) {
-      if (error.message?.includes("already registered")) {
-        toast({
-          title: "Account Exists",
-          description: "This email is already registered. Please login instead.",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Signup Failed",
-          description: error.message || "Please try again",
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "Signup Failed",
+        description: error.message || "Please try again",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -218,13 +231,9 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
       <header className="bg-primary text-primary-foreground py-4">
         <div className="container mx-auto px-4">
-          <button
-            onClick={() => navigate("/")}
-            className="flex items-center gap-2 hover:text-accent transition-colors"
-          >
+          <button onClick={() => navigate("/")} className="flex items-center gap-2 hover:text-accent transition-colors">
             <ArrowLeft className="w-5 h-5" />
             <span>Back to Homepage</span>
           </button>
@@ -237,12 +246,8 @@ const Auth = () => {
             <div className="w-16 h-16 rounded-full hero-gradient flex items-center justify-center mx-auto mb-4">
               <span className="text-primary-foreground font-serif font-bold text-2xl">A</span>
             </div>
-            <h1 className="font-serif text-2xl font-bold text-foreground">
-              Staff Portal
-            </h1>
-            <p className="text-muted-foreground mt-2">
-              Africana Muslim Secondary School
-            </p>
+            <h1 className="font-serif text-2xl font-bold text-foreground">Staff Portal</h1>
+            <p className="text-muted-foreground mt-2">Africana Muslim Secondary School</p>
           </div>
 
           <div className="bg-card rounded-xl p-6 shadow-lg border border-border">
@@ -282,14 +287,7 @@ const Auth = () => {
                       )}
                     />
                     <Button type="submit" className="w-full" disabled={isLoading}>
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Logging in...
-                        </>
-                      ) : (
-                        "Login"
-                      )}
+                      {isLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : "Login"}
                     </Button>
                   </form>
                 </Form>
@@ -337,10 +335,8 @@ const Auth = () => {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {schoolPositions.map((position) => (
-                                <SelectItem key={position} value={position}>
-                                  {position}
-                                </SelectItem>
+                              {schoolPositions.map((p) => (
+                                <SelectItem key={p} value={p}>{p}</SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
@@ -349,12 +345,13 @@ const Auth = () => {
                       )}
                     />
                     {selectedPosition === "Other" && (
-                      <div>
+                      <div className="space-y-2">
                         <FormLabel>Specify Your Role</FormLabel>
-                        <Input
-                          placeholder="Enter your role"
-                          value={customPosition}
-                          onChange={(e) => setCustomPosition(e.target.value)}
+                        <Input 
+                          placeholder="e.g. Accountant, Driver"
+                          value={customPosition} 
+                          onChange={(e) => setCustomPosition(e.target.value)} 
+                          required
                         />
                       </div>
                     )}
@@ -385,20 +382,10 @@ const Auth = () => {
                       )}
                     />
                     <Button type="submit" className="w-full" disabled={isLoading}>
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Submitting...
-                        </>
-                      ) : (
-                        "Submit Registration"
-                      )}
+                      {isLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : "Submit Registration"}
                     </Button>
                   </form>
                 </Form>
-                <p className="text-sm text-muted-foreground text-center mt-4">
-                  Your registration will be reviewed by the Super Admin.
-                </p>
               </TabsContent>
             </Tabs>
           </div>

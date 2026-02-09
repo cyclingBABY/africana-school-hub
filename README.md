@@ -70,4 +70,10 @@ Yes, you can!
 
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+https://nmzauowbundwdrddudpl.supabase.co
+
+
+
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+
+eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5temF1b3didW5kd2RyZGR1ZHBsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA2NTY3NjUsImV4cCI6MjA4NjIzMjc2NX0.XvLwF55wArx-bhDUfV8p8kpjjkjoYe3l10CBvqEcB-8

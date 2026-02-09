@@ -26,6 +26,8 @@ interface StaffMember {
   full_name: string;
   role: 'admin' | 'staff' | 'super_admin';
   status: 'pending' | 'approved' | 'blocked';
+  email?: string;
+  school_position?: string | null;
 }
 
 const Admin = () => {
@@ -38,72 +40,108 @@ const Admin = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
+
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!isMounted) return;
+
+      if (!session) {
+        navigate('/auth');
+        return;
+      }
+
+      setUser(session.user);
+      await fetchStaffMember(session.user);
+    };
+
+    checkUser();
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setUser(session?.user ?? null);
-        if (!session?.user) {
+      async (event, session) => {
+        if (!isMounted) return;
+        
+        if (event === 'SIGNED_OUT' || !session) {
+          setUser(null);
+          setStaffMember(null);
           navigate('/auth');
-        } else {
-          setTimeout(() => {
-            fetchStaffMember(session.user.id);
-          }, 0);
+        } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          if (session) {
+            setUser(session.user);
+            await fetchStaffMember(session.user);
+          }
         }
       }
     );
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (!session?.user) {
-        navigate('/auth');
-      } else {
-        fetchStaffMember(session.user.id);
-      }
-    });
-
-    return () => subscription.unsubscribe();
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
-  const fetchStaffMember = async (userId: string) => {
-    const { data, error } = await supabase
-      .from('staff_members')
-      .select('*')
-      .eq('user_id', userId)
-      .maybeSingle();
+  const fetchStaffMember = async (currentUser: User) => {
+    try {
+      const { data, error } = await supabase
+        .from('staff_members')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .maybeSingle();
 
-    if (error || !data) {
-      toast({
-        title: "Access Denied",
-        description: "You are not a registered staff member. Please contact an administrator.",
-        variant: "destructive",
-      });
-      await supabase.auth.signOut();
-      navigate('/auth');
-      return;
+      if (error) throw error;
+
+      // Handle Supreme Admin bypass (if no record exists but email matches)
+      const SUPREME_EMAIL = "africanamuslim_code5_creations@gmail.com";
+      
+      if (!data) {
+        if (currentUser.email === SUPREME_EMAIL) {
+          // Auto-create or use a temporary staff object for supreme admin
+          const supremeStaff: StaffMember = {
+            id: '00000000-0000-0000-0000-000000000000',
+            full_name: 'Super Admin',
+            role: 'super_admin',
+            status: 'approved'
+          };
+          setStaffMember(supremeStaff);
+          setIsLoading(false);
+          return;
+        }
+
+        toast({
+          title: "Access Denied",
+          description: "You are not a registered staff member.",
+          variant: "destructive",
+        });
+        await supabase.auth.signOut();
+        return;
+      }
+
+      if (data.status === 'pending') {
+        toast({
+          title: "Pending Approval",
+          description: "Your account is pending approval.",
+        });
+        await supabase.auth.signOut();
+        return;
+      }
+
+      if (data.status === 'blocked') {
+        toast({
+          title: "Account Blocked",
+          description: "Your account has been blocked.",
+          variant: "destructive",
+        });
+        await supabase.auth.signOut();
+        return;
+      }
+
+      setStaffMember(data as StaffMember);
+    } catch (err: any) {
+      console.error("Error fetching staff member:", err);
+    } finally {
+      setIsLoading(false);
     }
-
-    if (data.status === 'pending') {
-      toast({
-        title: "Pending Approval",
-        description: "Your account is pending approval from the Super Admin.",
-      });
-      await supabase.auth.signOut();
-      navigate('/auth');
-      return;
-    }
-
-    if (data.status === 'blocked') {
-      toast({
-        title: "Account Blocked",
-        description: "Your account has been blocked. Please contact the administrator.",
-        variant: "destructive",
-      });
-      await supabase.auth.signOut();
-      navigate('/auth');
-      return;
-    }
-
-    setStaffMember(data as StaffMember);
-    setIsLoading(false);
   };
 
   const handleLogout = async () => {
@@ -112,7 +150,6 @@ const Admin = () => {
   };
 
   const isSuperAdmin = staffMember?.role === 'super_admin';
-  const isAdminOrSuper = staffMember?.role === 'admin' || staffMember?.role === 'super_admin';
 
   if (isLoading) {
     return (
