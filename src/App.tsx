@@ -7,6 +7,9 @@ import Index from "./pages/Index";
 import Apply from "./pages/Apply";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
+import Library from "./pages/Library";
+import LibraryAdmin from "./pages/LibraryAdmin";
+import MemberDashboard from "./pages/MemberDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +25,9 @@ const App = () => (
           <Route path="/apply" element={<Apply />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/library" element={<Library />} />
+          <Route path="/library/admin" element={<LibraryAdmin />} />
+          <Route path="/library/dashboard" element={<MemberDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
