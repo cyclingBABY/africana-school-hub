@@ -7,6 +7,7 @@ import { Loader2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Form,
   FormControl,
@@ -20,10 +21,6 @@ const loginSchema = z.object({
   email: z.string().email("Valid email is required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
-
-// Hardcoded Super Admin credentials
-const ADMIN_EMAIL = "africanamuslim_code5_creations@gmail.com";
-const ADMIN_PASSWORD = "admin.africana.2026";
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
@@ -47,30 +44,70 @@ const Auth = () => {
 
   const onLogin = async (data: LoginFormData) => {
     setIsLoading(true);
-    
-    // Simulate a small delay for UX
-    await new Promise(resolve => setTimeout(resolve, 500));
 
-    if (data.email.toLowerCase() === ADMIN_EMAIL && data.password === ADMIN_PASSWORD) {
-      localStorage.setItem("admin_logged_in", "true");
-      localStorage.setItem("admin_email", data.email);
-      localStorage.setItem("admin_name", "Super Admin");
-      
-      toast({
-        title: "Login Successful",
-        description: "Welcome, Super Admin!",
+    try {
+      // Authenticate with Supabase
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
       });
-      
-      navigate("/admin");
-    } else {
+
+      if (authError) throw authError;
+
+      if (authData.user) {
+        // Check user role in database
+        const { data: staffData, error: staffError } = await supabase
+          .from('staff_members')
+          .select('role, full_name')
+          .eq('user_id', authData.user.id)
+          .eq('status', 'approved')
+          .single();
+
+        const { data: memberData, error: memberError } = await supabase
+          .from('library_members')
+          .select('member_type, full_name')
+          .eq('user_id', authData.user.id)
+          .eq('member_status', 'active')
+          .single();
+
+        // Role-based redirection
+        if (staffData && !staffError) {
+          // Staff/Admin user
+          localStorage.setItem("user_role", staffData.role);
+          localStorage.setItem("user_name", staffData.full_name);
+
+          toast({
+            title: "Login Successful",
+            description: `Welcome back, ${staffData.full_name}!`,
+          });
+
+          navigate("/admin");
+        } else if (memberData && !memberError) {
+          // Library member
+          localStorage.setItem("user_role", "member");
+          localStorage.setItem("user_name", memberData.full_name);
+
+          toast({
+            title: "Login Successful",
+            description: `Welcome, ${memberData.full_name}!`,
+          });
+
+          navigate("/dashboard");
+        } else {
+          // No valid role found
+          await supabase.auth.signOut();
+          throw new Error("No valid library account found. Please contact admin.");
+        }
+      }
+    } catch (error: any) {
       toast({
         title: "Login Failed",
-        description: "Invalid email or password",
+        description: error.message || "Invalid email or password",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   };
 
   return (
@@ -94,10 +131,10 @@ const Auth = () => {
               <span className="text-primary-foreground font-serif font-bold text-2xl">A</span>
             </div>
             <h1 className="font-serif text-2xl font-bold text-foreground">
-              Admin Login
+              Library Portal Login
             </h1>
             <p className="text-muted-foreground mt-2">
-              Africana Muslim Secondary School
+              Africana Library Hub
             </p>
           </div>
 
