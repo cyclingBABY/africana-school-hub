@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Phone, Mail, UserCog, Newspaper } from "lucide-react";
+import { Menu, X, Phone, Mail, UserCog, UserPlus } from "lucide-react";
 import { useState } from "react";
 
 const Header = () => {
@@ -9,11 +9,9 @@ const Header = () => {
 
   const navLinks = [
     { label: "Home", href: isHomePage ? "#home" : "/" },
-    { label: "Admission", href: isHomePage ? "#admission" : "/#admission" },
-    { label: "Fees", href: isHomePage ? "#fees" : "/#fees" },
-    { label: "Uniforms", href: isHomePage ? "#uniforms" : "/#uniforms" },
-    { label: "Requirements", href: isHomePage ? "#requirements" : "/#requirements" },
-    { label: "Gallery", href: isHomePage ? "#gallery" : "/#gallery" },
+    { label: "Collections", href: isHomePage ? "#collections" : "/#collections" },
+    { label: "Live Stats", href: isHomePage ? "#stats" : "/#stats" },
+    { label: "Data Flow", href: isHomePage ? "#flow" : "/#flow" },
     { label: "Contact", href: isHomePage ? "#contact" : "/#contact" },
   ];
 
@@ -27,12 +25,12 @@ const Header = () => {
               <Phone className="w-3 h-3" />
               <span>0750 492418</span>
             </a>
-            <a href="mailto:africanamuslim@gmail.com" className="flex items-center gap-1 hover:text-accent transition-colors">
+            <a href="mailto:lms@ugandadigitallibrary.org" className="flex items-center gap-1 hover:text-accent transition-colors">
               <Mail className="w-3 h-3" />
-              <span>africanamuslim@gmail.com</span>
+              <span>lms@ugandadigitallibrary.org</span>
             </a>
           </div>
-          <p className="hidden md:block font-medium italic">"Attain Knowledge and Rise in Degree"</p>
+          <p className="hidden md:block font-medium italic">"Unlock knowledge for every reader"</p>
         </div>
       </div>
 
@@ -41,11 +39,11 @@ const Header = () => {
         <div className="flex items-center justify-between">
           <a href="#home" className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-full hero-gradient flex items-center justify-center">
-              <span className="text-primary-foreground font-serif font-bold text-xl">A</span>
+              <span className="text-primary-foreground font-serif font-bold text-xl">L</span>
             </div>
             <div>
-              <h1 className="font-serif font-bold text-lg text-foreground leading-tight">Africana Muslim</h1>
-              <p className="text-xs text-muted-foreground">Secondary School</p>
+              <h1 className="font-serif font-bold text-lg text-foreground leading-tight">Uganda Digital Library</h1>
+              <p className="text-xs text-muted-foreground">Modern Library Management</p>
             </div>
           </a>
 
@@ -61,18 +59,18 @@ const Header = () => {
               </a>
             ))}
             <Link
-              to="/news"
-              className="flex items-center gap-1 text-foreground hover:text-primary font-medium transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-accent hover:after:w-full after:transition-all"
+              to="/register"
+              className="flex items-center gap-2 text-foreground hover:text-primary font-medium transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-accent hover:after:w-full after:transition-all"
             >
-              <Newspaper className="w-4 h-4" />
-              News
+              <UserPlus className="w-4 h-4" />
+              Join the Library
             </Link>
             <Link
               to="/auth"
               className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:opacity-90 transition-all text-sm font-medium"
             >
               <UserCog className="w-4 h-4" />
-              Staff Login
+              Member Login
             </Link>
           </div>
 
@@ -100,12 +98,20 @@ const Header = () => {
                 </a>
               ))}
               <Link
-                to="/news"
+                to="/register"
                 onClick={() => setIsMenuOpen(false)}
                 className="flex items-center gap-2 text-foreground hover:text-primary font-medium transition-colors"
               >
-                <Newspaper className="w-4 h-4" />
-                News & Events
+                <UserPlus className="w-4 h-4" />
+                Join the Library
+              </Link>
+              <Link
+                to="/auth"
+                onClick={() => setIsMenuOpen(false)}
+                className="flex items-center gap-2 text-foreground hover:text-primary font-medium transition-colors"
+              >
+                <UserCog className="w-4 h-4" />
+                Member Login
               </Link>
             </div>
           </div>

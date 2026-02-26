@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, QrCode, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -21,9 +21,20 @@ const loginSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
-// Hardcoded Super Admin credentials
-const ADMIN_EMAIL = "africanamuslim_code5_creations@gmail.com";
-const ADMIN_PASSWORD = "admin.africana.2026";
+const roleMatrix = [
+  {
+    email: "admin@ugandadigitallibrary.org",
+    password: "admin.uganda.2026",
+    role: "admin",
+    name: "Library Admin",
+  },
+  {
+    email: "member@ugandadigitallibrary.org",
+    password: "member.uganda.2026",
+    role: "member",
+    name: "Amina",
+  },
+];
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
@@ -34,9 +45,12 @@ const Auth = () => {
 
   useEffect(() => {
     // Check if already logged in
-    const isLoggedIn = localStorage.getItem("admin_logged_in") === "true";
-    if (isLoggedIn) {
+    const role = localStorage.getItem("user_role");
+    if (role === "admin") {
       navigate("/admin");
+    }
+    if (role === "member") {
+      navigate("/member");
     }
   }, [navigate]);
 
@@ -51,17 +65,25 @@ const Auth = () => {
     // Simulate a small delay for UX
     await new Promise(resolve => setTimeout(resolve, 500));
 
-    if (data.email.toLowerCase() === ADMIN_EMAIL && data.password === ADMIN_PASSWORD) {
-      localStorage.setItem("admin_logged_in", "true");
-      localStorage.setItem("admin_email", data.email);
-      localStorage.setItem("admin_name", "Super Admin");
-      
+    const matchedUser = roleMatrix.find(
+      (user) => user.email.toLowerCase() === data.email.toLowerCase() && user.password === data.password
+    );
+
+    if (matchedUser) {
+      localStorage.setItem("user_role", matchedUser.role);
+      localStorage.setItem("user_email", matchedUser.email);
+      localStorage.setItem("user_name", matchedUser.name);
+      localStorage.setItem("admin_logged_in", matchedUser.role === "admin" ? "true" : "false");
+      localStorage.setItem("admin_email", matchedUser.role === "admin" ? matchedUser.email : "");
+      localStorage.setItem("admin_name", matchedUser.role === "admin" ? matchedUser.name : "");
+      localStorage.setItem("member_name", matchedUser.role === "member" ? matchedUser.name : "");
+
       toast({
         title: "Login Successful",
-        description: "Welcome, Super Admin!",
+        description: `Welcome, ${matchedUser.name}!`,
       });
-      
-      navigate("/admin");
+
+      navigate(matchedUser.role === "admin" ? "/admin" : "/member");
     } else {
       toast({
         title: "Login Failed",
@@ -94,10 +116,10 @@ const Auth = () => {
               <span className="text-primary-foreground font-serif font-bold text-2xl">A</span>
             </div>
             <h1 className="font-serif text-2xl font-bold text-foreground">
-              Admin Login
+              Secure Login Portal
             </h1>
             <p className="text-muted-foreground mt-2">
-              Africana Muslim Secondary School
+              Unified access for admins and members
             </p>
           </div>
 
@@ -142,6 +164,19 @@ const Auth = () => {
                 </Button>
               </form>
             </Form>
+            <div className="mt-6 space-y-3">
+              <Button variant="outline" className="w-full" type="button">
+                <Mail className="w-4 h-4 mr-2" />
+                Login with Google
+              </Button>
+              <Button variant="outline" className="w-full" type="button">
+                <QrCode className="w-4 h-4 mr-2" />
+                Scan QR Code to Login
+              </Button>
+              <div className="text-xs text-muted-foreground text-center">
+                Demo Admin: admin@ugandadigitallibrary.org | Demo Member: member@ugandadigitallibrary.org
+              </div>
+            </div>
           </div>
         </div>
       </main>
