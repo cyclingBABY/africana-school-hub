@@ -156,17 +156,16 @@ const PostsManagement = ({ staffId, isSuperAdmin, onUpdate }: PostsManagementPro
     const filePath = `news/${fileName}`;
 
     const { error: uploadError } = await supabase.storage
-      .from('content-media')
+      .from('site-media')
       .upload(filePath, file);
 
     if (uploadError) throw uploadError;
 
     const { data: { publicUrl } } = supabase.storage
-      .from('content-media')
+      .from('site-media')
       .getPublicUrl(filePath);
 
-    // Automatically register this new upload in the library table
-    await supabase.from('media_files').insert({
+    await (supabase as any).from('media_files').insert({
       file_name: file.name,
       file_url: publicUrl,
       file_type: file.type.startsWith('video') ? 'video' : 'image'
