@@ -196,7 +196,7 @@ const MediaManagement = () => {
   const handleUpdate = async () => {
     if (!editingItem) return;
 
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('media_files')
       .update({
         file_name: editingItem.title,
