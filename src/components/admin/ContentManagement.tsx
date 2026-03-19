@@ -145,7 +145,7 @@ const ContentManagement = ({ staffId, isSuperAdmin }: ContentManagementProps) =>
     const filePath = `news/${fileName}`;
 
     const { error: uploadError } = await supabase.storage
-      .from('content-media')
+      .from('site-media')
       .upload(filePath, file);
 
     if (uploadError) {
@@ -153,7 +153,7 @@ const ContentManagement = ({ staffId, isSuperAdmin }: ContentManagementProps) =>
     }
 
     const { data: { publicUrl } } = supabase.storage
-      .from('content-media')
+      .from('site-media')
       .getPublicUrl(filePath);
 
     return publicUrl;

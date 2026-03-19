@@ -229,13 +229,13 @@ const ImagesGallery = ({ staffId, isSuperAdmin, onUpdate }: ImagesGalleryProps) 
       const filePath = `replacements/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
-        .from('content-media')
+        .from('site-media')
         .upload(filePath, newImageFile);
 
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
-        .from('content-media')
+        .from('site-media')
         .getPublicUrl(filePath);
 
       const image = websiteImages.find(img => img.id === replacingImageFor);

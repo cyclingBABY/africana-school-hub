@@ -198,9 +198,10 @@ const PostsManagement = ({ staffId, isSuperAdmin, onUpdate }: PostsManagementPro
         author_id: staffId,
       };
 
+      const postsTable = (supabase as any).from('posts');
       const { error } = editingPost 
-        ? await supabase.from('posts').update(postData).eq('id', editingPost.id)
-        : await supabase.from('posts').insert(postData);
+        ? await postsTable.update(postData).eq('id', editingPost.id)
+        : await postsTable.insert(postData);
 
       if (error) throw error;
       

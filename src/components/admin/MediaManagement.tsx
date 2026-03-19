@@ -220,17 +220,14 @@ const MediaManagement = () => {
   };
 
   const handleDelete = async (item: MediaItem) => {
-    // Extract file path from URL
-    const urlParts = item.file_url.split('/content-media/');
+    const urlParts = item.file_url.split('/site-media/');
     const filePath = urlParts[1];
 
-    // Delete from storage
     if (filePath) {
-      await supabase.storage.from('content-media').remove([filePath]);
+      await supabase.storage.from('site-media').remove([decodeURIComponent(filePath)]);
     }
 
-    // Delete from database
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('media_files')
       .delete()
       .eq('id', item.id);
