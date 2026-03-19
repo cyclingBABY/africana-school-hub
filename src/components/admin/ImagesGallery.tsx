@@ -188,16 +188,14 @@ const ImagesGallery = ({ staffId, isSuperAdmin, onUpdate }: ImagesGalleryProps) 
 
         if (error) throw error;
       } else if (image.source === 'media_file' && image.media_id) {
-        // Delete from storage
-        const urlParts = image.url.split('/content-media/');
+        const urlParts = image.url.split('/site-media/');
         const filePath = urlParts[1];
         
         if (filePath) {
-          await supabase.storage.from('content-media').remove([filePath]);
+          await supabase.storage.from('site-media').remove([decodeURIComponent(filePath)]);
         }
 
-        // Delete from database
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('media_files')
           .delete()
           .eq('id', image.media_id);
