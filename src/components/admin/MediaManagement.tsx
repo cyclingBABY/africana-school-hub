@@ -153,18 +153,18 @@ const MediaManagement = () => {
 
       // Upload to storage
       const { error: uploadError } = await supabase.storage
-        .from('content-media')
+        .from('site-media')
         .upload(filePath, newMedia.file);
 
       if (uploadError) throw uploadError;
 
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
-        .from('content-media')
+        .from('site-media')
         .getPublicUrl(filePath);
 
       // Save to database
-      const { error: dbError } = await supabase
+      const { error: dbError } = await (supabase as any)
         .from('media_files')
         .insert({
           file_name: newMedia.title,
