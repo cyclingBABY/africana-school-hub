@@ -1,13 +1,18 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Database } from "@/integrations/supabase/types";
 
-type DbContentCategory = Database["public"]["Enums"]["content_category"];
-
-export type MediaCategory = 
-  | DbContentCategory
-  | "events"  // Alias for school_trip
-  | "campus"; // Alias for students
+export type MediaCategory =
+  | "features"
+  | "gallery"
+  | "general"
+  | "hero"
+  | "school_trip"
+  | "sports"
+  | "students"
+  | "debates"
+  | "mdd"
+  | "events"
+  | "campus";
 
 export interface SiteMedia {
   id: string;
@@ -18,11 +23,20 @@ export interface SiteMedia {
   created_at: string;
 }
 
-/**
- * Custom hook to fetch site media by category from the posts table
- * @param category - The category of media to fetch
- * @returns Object containing media array, loading state, and error
- */
+const categoryMap: Record<MediaCategory, string[]> = {
+  features: ["features"],
+  gallery: ["gallery"],
+  general: ["general"],
+  hero: ["hero"],
+  school_trip: ["school_trip", "events"],
+  sports: ["sports"],
+  students: ["students", "campus"],
+  debates: ["debates"],
+  mdd: ["mdd"],
+  events: ["events", "school_trip"],
+  campus: ["campus", "students"],
+};
+
 export function useSiteMedia(category: MediaCategory) {
   const [media, setMedia] = useState<SiteMedia[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -34,33 +48,23 @@ export function useSiteMedia(category: MediaCategory) {
         setIsLoading(true);
         setError(null);
 
-        // Map aliases to actual database categories
-        const categoryMap: Record<string, DbContentCategory> = {
-          events: "school_trip",
-          campus: "students",
-        };
+        const categories = categoryMap[category] ?? [category];
 
-        const dbCategory: DbContentCategory = (categoryMap[category] || category) as DbContentCategory;
-
-        // Fetch published posts with images for the specified category
-        const { data, error: fetchError } = await supabase
-          .from("posts")
-          .select("id, title, content, image_url, display_order, created_at")
-          .eq("category", dbCategory)
-          .eq("is_published", true)
-          .not("image_url", "is", null)
-          .order("display_order", { ascending: true })
+        const { data, error: fetchError } = await (supabase as any)
+          .from("site_media")
+          .select("id, file_url, title, description, created_at, category, file_type")
+          .eq("file_type", "image")
+          .in("category", categories)
           .order("created_at", { ascending: false });
 
         if (fetchError) throw fetchError;
 
-        // Transform data to match SiteMedia interface
-        const transformedMedia: SiteMedia[] = (data || []).map((item) => ({
+        const transformedMedia: SiteMedia[] = ((data as any[]) || []).map((item, index) => ({
           id: item.id,
-          file_url: item.image_url || "",
-          title: item.title,
-          description: item.content || "",
-          display_order: item.display_order || 0,
+          file_url: item.file_url || "",
+          title: item.title || "",
+          description: item.description || "",
+          display_order: index,
           created_at: item.created_at,
         }));
 

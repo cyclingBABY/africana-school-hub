@@ -89,13 +89,13 @@ const MediaManagement = () => {
   }, []);
 
   const fetchMedia = async () => {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('media_files')
       .select('*')
       .order('created_at', { ascending: false });
 
     if (data) {
-      const mappedData = data.map((item: any) => ({
+      const mappedData = (data as any[]).map((item) => ({
         id: item.id,
         title: item.file_name,
         description: null,
@@ -153,18 +153,18 @@ const MediaManagement = () => {
 
       // Upload to storage
       const { error: uploadError } = await supabase.storage
-        .from('content-media')
+        .from('site-media')
         .upload(filePath, newMedia.file);
 
       if (uploadError) throw uploadError;
 
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
-        .from('content-media')
+        .from('site-media')
         .getPublicUrl(filePath);
 
       // Save to database
-      const { error: dbError } = await supabase
+      const { error: dbError } = await (supabase as any)
         .from('media_files')
         .insert({
           file_name: newMedia.title,
@@ -196,7 +196,7 @@ const MediaManagement = () => {
   const handleUpdate = async () => {
     if (!editingItem) return;
 
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('media_files')
       .update({
         file_name: editingItem.title,
@@ -220,17 +220,14 @@ const MediaManagement = () => {
   };
 
   const handleDelete = async (item: MediaItem) => {
-    // Extract file path from URL
-    const urlParts = item.file_url.split('/content-media/');
+    const urlParts = item.file_url.split('/site-media/');
     const filePath = urlParts[1];
 
-    // Delete from storage
     if (filePath) {
-      await supabase.storage.from('content-media').remove([filePath]);
+      await supabase.storage.from('site-media').remove([decodeURIComponent(filePath)]);
     }
 
-    // Delete from database
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('media_files')
       .delete()
       .eq('id', item.id);

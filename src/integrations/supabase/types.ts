@@ -159,11 +159,6 @@ export type Database = {
           is_published: boolean | null
           title: string
           updated_at: string
-          content_type: Database["public"]["Enums"]["content_type"] | null
-          category: Database["public"]["Enums"]["content_category"] | null
-          video_url: string | null
-          display_order: number | null
-          metadata: Json | null
         }
         Insert: {
           author_id: string
@@ -174,11 +169,6 @@ export type Database = {
           is_published?: boolean | null
           title: string
           updated_at?: string
-          content_type?: Database["public"]["Enums"]["content_type"] | null
-          category?: Database["public"]["Enums"]["content_category"] | null
-          video_url?: string | null
-          display_order?: number | null
-          metadata?: Json | null
         }
         Update: {
           author_id?: string
@@ -189,11 +179,6 @@ export type Database = {
           is_published?: boolean | null
           title?: string
           updated_at?: string
-          content_type?: Database["public"]["Enums"]["content_type"] | null
-          category?: Database["public"]["Enums"]["content_category"] | null
-          video_url?: string | null
-          display_order?: number | null
-          metadata?: Json | null
         }
         Relationships: [
           {
@@ -205,56 +190,38 @@ export type Database = {
           },
         ]
       }
-      media_files: {
+      site_media: {
         Row: {
-          id: string
-          post_id: string | null
-          file_url: string
-          file_name: string
+          category: string | null
+          created_at: string | null
+          description: string | null
           file_type: string
-          file_size: number | null
-          thumbnail_url: string | null
-          created_at: string
-          created_by: string | null
+          file_url: string
+          id: string
+          title: string
+          updated_at: string | null
         }
         Insert: {
-          id?: string
-          post_id?: string | null
-          file_url: string
-          file_name: string
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
           file_type: string
-          file_size?: number | null
-          thumbnail_url?: string | null
-          created_at?: string
-          created_by?: string | null
+          file_url: string
+          id?: string
+          title: string
+          updated_at?: string | null
         }
         Update: {
-          id?: string
-          post_id?: string | null
-          file_url?: string
-          file_name?: string
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
           file_type?: string
-          file_size?: number | null
-          thumbnail_url?: string | null
-          created_at?: string
-          created_by?: string | null
+          file_url?: string
+          id?: string
+          title?: string
+          updated_at?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "media_files_post_id_fkey"
-            columns: ["post_id"]
-            isOneToOne: false
-            referencedRelation: "posts"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "media_files_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "staff_members"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       staff_members: {
         Row: {
@@ -307,8 +274,6 @@ export type Database = {
       application_status: "pending" | "under_review" | "approved" | "rejected"
       staff_role: "admin" | "staff" | "super_admin"
       staff_status: "pending" | "approved" | "blocked"
-      content_type: "news" | "photo" | "video" | "announcement"
-      content_category: "school_trip" | "sports" | "students" | "gallery" | "general" | "hero" | "features"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -439,8 +404,6 @@ export const Constants = {
       application_status: ["pending", "under_review", "approved", "rejected"],
       staff_role: ["admin", "staff", "super_admin"],
       staff_status: ["pending", "approved", "blocked"],
-      content_type: ["news", "photo", "video", "announcement"],
-      content_category: ["school_trip", "sports", "students", "gallery", "general", "hero", "features"],
     },
   },
 } as const

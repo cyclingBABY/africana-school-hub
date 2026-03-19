@@ -79,15 +79,16 @@ const ImagesGallery = ({ staffId, isSuperAdmin, onUpdate }: ImagesGalleryProps) 
     setIsLoading(true);
     const images: WebsiteImage[] = [];
 
-    // Fetch images from posts
-    const { data: postsData } = await supabase
+    const postsClient = supabase as any;
+
+    const { data: postsData } = await postsClient
       .from('posts')
       .select('id, title, image_url, category, created_at')
       .not('image_url', 'is', null)
       .order('created_at', { ascending: false });
 
     if (postsData) {
-      postsData.forEach(post => {
+      (postsData as any[]).forEach((post) => {
         if (post.image_url) {
           images.push({
             id: `post-${post.id}`,
@@ -102,15 +103,14 @@ const ImagesGallery = ({ staffId, isSuperAdmin, onUpdate }: ImagesGalleryProps) 
       });
     }
 
-    // Fetch images from media_files
-    const { data: mediaData } = await supabase
+    const { data: mediaData } = await postsClient
       .from('media_files')
       .select('id, file_name, file_url, file_type, created_at')
       .eq('file_type', 'image')
       .order('created_at', { ascending: false });
 
     if (mediaData) {
-      mediaData.forEach(media => {
+      (mediaData as any[]).forEach((media) => {
         images.push({
           id: `media-${media.id}`,
           url: media.file_url,
@@ -122,8 +122,7 @@ const ImagesGallery = ({ staffId, isSuperAdmin, onUpdate }: ImagesGalleryProps) 
       });
     }
 
-    // Check which posts use each image
-    const { data: allPosts } = await supabase
+    const { data: allPosts } = await postsClient
       .from('posts')
       .select('id, title, image_url');
 
@@ -151,7 +150,7 @@ const ImagesGallery = ({ staffId, isSuperAdmin, onUpdate }: ImagesGalleryProps) 
 
         if (error) throw error;
       } else if (editingImage.source === 'media_file' && editingImage.media_id) {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('media_files')
           .update({
             file_name: editingImage.title,
@@ -189,16 +188,14 @@ const ImagesGallery = ({ staffId, isSuperAdmin, onUpdate }: ImagesGalleryProps) 
 
         if (error) throw error;
       } else if (image.source === 'media_file' && image.media_id) {
-        // Delete from storage
-        const urlParts = image.url.split('/content-media/');
+        const urlParts = image.url.split('/site-media/');
         const filePath = urlParts[1];
         
         if (filePath) {
-          await supabase.storage.from('content-media').remove([filePath]);
+          await supabase.storage.from('site-media').remove([decodeURIComponent(filePath)]);
         }
 
-        // Delete from database
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('media_files')
           .delete()
           .eq('id', image.media_id);
@@ -232,13 +229,13 @@ const ImagesGallery = ({ staffId, isSuperAdmin, onUpdate }: ImagesGalleryProps) 
       const filePath = `replacements/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
-        .from('content-media')
+        .from('site-media')
         .upload(filePath, newImageFile);
 
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
-        .from('content-media')
+        .from('site-media')
         .getPublicUrl(filePath);
 
       const image = websiteImages.find(img => img.id === replacingImageFor);

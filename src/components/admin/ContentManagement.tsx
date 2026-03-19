@@ -80,18 +80,18 @@ const ContentManagement = ({ staffId, isSuperAdmin }: ContentManagementProps) =>
   }, []);
 
   const fetchMediaItems = async () => {
-    const { data } = await supabase
+    const { data } = await (supabase as any)
       .from('media_files')
       .select('id, file_name, file_url, file_type')
       .in('file_type', ['image', 'video'])
       .order('created_at', { ascending: false });
     
     if (data) {
-      setMediaItems(data.map(item => ({
+      setMediaItems((data as any[]).map((item) => ({
         id: item.id,
         title: item.file_name,
         file_url: item.file_url,
-        file_type: item.file_type
+        file_type: item.file_type,
       })));
     }
   };
@@ -145,7 +145,7 @@ const ContentManagement = ({ staffId, isSuperAdmin }: ContentManagementProps) =>
     const filePath = `news/${fileName}`;
 
     const { error: uploadError } = await supabase.storage
-      .from('content-media')
+      .from('site-media')
       .upload(filePath, file);
 
     if (uploadError) {
@@ -153,7 +153,7 @@ const ContentManagement = ({ staffId, isSuperAdmin }: ContentManagementProps) =>
     }
 
     const { data: { publicUrl } } = supabase.storage
-      .from('content-media')
+      .from('site-media')
       .getPublicUrl(filePath);
 
     return publicUrl;

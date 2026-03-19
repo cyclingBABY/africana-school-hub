@@ -74,6 +74,8 @@ const categories = [
   { value: "general", label: "General" },
   { value: "hero", label: "Hero" },
   { value: "features", label: "Features" },
+  { value: "debates", label: "Debates" },
+  { value: "mdd", label: "Music, Dance & Drama" },
 ];
 
 const PostsManagement = ({ staffId, isSuperAdmin, onUpdate }: PostsManagementProps) => {
@@ -102,17 +104,17 @@ const PostsManagement = ({ staffId, isSuperAdmin, onUpdate }: PostsManagementPro
   }, []);
 
   const fetchMediaItems = async () => {
-    const { data } = await supabase
+    const { data } = await (supabase as any)
       .from('media_files')
       .select('id, file_name, file_url, file_type')
       .order('created_at', { ascending: false });
     
     if (data) {
-      setMediaItems(data.map(item => ({
+      setMediaItems((data as any[]).map((item) => ({
         id: item.id,
         title: item.file_name,
         file_url: item.file_url,
-        file_type: item.file_type
+        file_type: item.file_type,
       })));
     }
   };
@@ -154,17 +156,16 @@ const PostsManagement = ({ staffId, isSuperAdmin, onUpdate }: PostsManagementPro
     const filePath = `news/${fileName}`;
 
     const { error: uploadError } = await supabase.storage
-      .from('content-media')
+      .from('site-media')
       .upload(filePath, file);
 
     if (uploadError) throw uploadError;
 
     const { data: { publicUrl } } = supabase.storage
-      .from('content-media')
+      .from('site-media')
       .getPublicUrl(filePath);
 
-    // Automatically register this new upload in the library table
-    await supabase.from('media_files').insert({
+    await (supabase as any).from('media_files').insert({
       file_name: file.name,
       file_url: publicUrl,
       file_type: file.type.startsWith('video') ? 'video' : 'image'
@@ -197,9 +198,10 @@ const PostsManagement = ({ staffId, isSuperAdmin, onUpdate }: PostsManagementPro
         author_id: staffId,
       };
 
+      const postsTable = (supabase as any).from('posts');
       const { error } = editingPost 
-        ? await supabase.from('posts').update(postData).eq('id', editingPost.id)
-        : await supabase.from('posts').insert(postData);
+        ? await postsTable.update(postData).eq('id', editingPost.id)
+        : await postsTable.insert(postData);
 
       if (error) throw error;
       
