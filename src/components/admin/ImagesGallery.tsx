@@ -150,7 +150,7 @@ const ImagesGallery = ({ staffId, isSuperAdmin, onUpdate }: ImagesGalleryProps) 
 
         if (error) throw error;
       } else if (editingImage.source === 'media_file' && editingImage.media_id) {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('media_files')
           .update({
             file_name: editingImage.title,
