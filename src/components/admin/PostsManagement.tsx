@@ -74,6 +74,8 @@ const categories = [
   { value: "general", label: "General" },
   { value: "hero", label: "Hero" },
   { value: "features", label: "Features" },
+  { value: "debates", label: "Debates" },
+  { value: "mdd", label: "Music, Dance & Drama" },
 ];
 
 const PostsManagement = ({ staffId, isSuperAdmin, onUpdate }: PostsManagementProps) => {

@@ -89,13 +89,13 @@ const MediaManagement = () => {
   }, []);
 
   const fetchMedia = async () => {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('media_files')
       .select('*')
       .order('created_at', { ascending: false });
 
     if (data) {
-      const mappedData = data.map((item: any) => ({
+      const mappedData = (data as any[]).map((item) => ({
         id: item.id,
         title: item.file_name,
         description: null,
