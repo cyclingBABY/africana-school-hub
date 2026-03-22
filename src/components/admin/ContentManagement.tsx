@@ -80,16 +80,16 @@ const ContentManagement = ({ staffId, isSuperAdmin }: ContentManagementProps) =>
   }, []);
 
   const fetchMediaItems = async () => {
-    const { data } = await (supabase as any)
-      .from('media_files')
-      .select('id, file_name, file_url, file_type')
+    const { data } = await supabase
+      .from('site_media')
+      .select('id, title, file_url, file_type')
       .in('file_type', ['image', 'video'])
       .order('created_at', { ascending: false });
     
     if (data) {
-      setMediaItems((data as any[]).map((item) => ({
+      setMediaItems((data as any[]).map((item: any) => ({
         id: item.id,
-        title: item.file_name,
+        title: item.title,
         file_url: item.file_url,
         file_type: item.file_type,
       })));
