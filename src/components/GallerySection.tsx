@@ -4,14 +4,14 @@ import AnimatedSection from "./AnimatedSection";
 import { useSiteMedia } from "@/hooks/useSiteMedia";
 
 // Fallback static images for when database is empty
-import trip1 from "@/assets/trip-1.jpg";
+// import trip1 from "@/assets/trip-1.jpg";
 import trip2 from "@/assets/trip-2.jpg";
 import sports1 from "@/assets/sports-1.jpg";
 import sports4 from "@/assets/sports-4.jpg";
 
 const fallbackImages = [
   { file_url: trip2, title: "School Trip", description: "Students enjoying educational excursions" },
-  { file_url: trip1, title: "Outdoor Learning", description: "Building friendships beyond the classroom" },
+  { file_url: trip2, title: "Outdoor Learning", description: "Building friendships beyond the classroom" },
   { file_url: sports4, title: "League Champions", description: "Africana Muslims leading the Sokolo League" },
   { file_url: sports1, title: "Goal Celebration", description: "Our football team celebrating" },
 ];

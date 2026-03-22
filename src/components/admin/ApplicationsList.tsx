@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 import { 
   Search, 
   Filter, 
@@ -8,8 +9,23 @@ import {
   MessageSquare,
   ChevronLeft,
   ChevronRight,
-  X
+  X,
+  Edit3,
+  DownloadCloud
 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -35,16 +51,71 @@ interface ApplicationsListProps {
 
 const ApplicationsList = ({ staffId }: ApplicationsListProps) => {
   const { toast } = useToast();
-  const [applications, setApplications] = useState<any[]>([]);
+  const [applications, setApplications] = useState<Database['public']['Tables']['applications']['Row'][]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [selectedApp, setSelectedApp] = useState<any>(null);
+  const [selectedApp, setSelectedApp] = useState<Database['public']['Tables']['applications']['Row'] | null>(null);
+  const [editingApp, setEditingApp] = useState<Database['public']['Tables']['applications']['Row'] | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
   const [notes, setNotes] = useState<any[]>([]);
   const [newNote, setNewNote] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedApps, setSelectedApps] = useState<string[]>([]);
+  const [selectAll, setSelectAll] = useState(false);
   const itemsPerPage = 10;
+
+  // Zod schema for edit form (matching Apply.tsx)
+  const editApplicationSchema = z.object({
+    student_first_name: z.string().min(2, "First name is required").max(50),
+    student_last_name: z.string().min(2, "Last name is required").max(50),
+    student_date_of_birth: z.string().min(1, "Date of birth is required"),
+    student_gender: z.string().min(1, "Gender is required"),
+    student_religion: z.string().optional(),
+    class_level: z.string().min(1, "Class level is required"),
+    student_type: z.string().min(1, "Student type is required"),
+    parent_name: z.string().min(2, "Parent name is required").max(100),
+    parent_email: z.string().email("Valid email is required"),
+    parent_phone: z.string().min(10, "Valid phone number is required").max(15),
+    parent_relationship: z.string().min(1, "Relationship is required"),
+    parent_address: z.string().min(5, "Address is required").max(200),
+    parent_occupation: z.string().optional(),
+    previous_school_name: z.string().optional(),
+    previous_school_class: z.string().optional(),
+    previous_school_leaving_reason: z.string().optional(),
+    emergency_contact_name: z.string().min(2, "Emergency contact name is required").max(100),
+    emergency_contact_phone: z.string().min(10, "Emergency contact phone is required").max(15),
+    emergency_contact_relationship: z.string().min(1, "Relationship is required"),
+  });
+
+  type EditApplicationData = z.infer<typeof editApplicationSchema>;
+
+  const editForm = useForm<EditApplicationData>({
+    resolver: zodResolver(editApplicationSchema),
+    defaultValues: {
+      student_first_name: "",
+      student_last_name: "",
+      student_date_of_birth: "",
+      student_gender: "",
+      student_religion: "",
+      class_level: "",
+      student_type: "",
+      parent_name: "",
+      parent_email: "",
+      parent_phone: "",
+      parent_relationship: "",
+      parent_address: "",
+      parent_occupation: "",
+      previous_school_name: "",
+      previous_school_class: "",
+      previous_school_leaving_reason: "",
+      emergency_contact_name: "",
+      emergency_contact_phone: "",
+      emergency_contact_relationship: "",
+    },
+  });
+
 
   useEffect(() => {
     fetchApplications();
@@ -208,14 +279,42 @@ const ApplicationsList = ({ staffId }: ApplicationsListProps) => {
 
   return (
     <div className="space-y-6">
+      {selectedApps.length > 0 && (
+        <div className="flex gap-2 p-4 bg-muted rounded-lg">
+          <span className="text-sm font-medium">{selectedApps.length} selected</span>
+          <Select onValueChange={async (status) => {
+            for (const id of selectedApps) {
+              await handleStatusChange(id, status as any);
+            }
+            setSelectedApps([]);
+            setSelectAll(false);
+          }}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Bulk update status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="under_review">Under Review</SelectItem>
+              <SelectItem value="approved">Approved</SelectItem>
+              <SelectItem value="rejected">Rejected</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button variant="outline" size="sm" onClick={handleExport}>
+            Export Selected
+          </Button>
+          <Button variant="destructive" size="sm" onClick={() => setSelectedApps([])}>
+            Clear Selection
+          </Button>
+        </div>
+      )}
       <div className="flex flex-col sm:flex-row justify-between gap-4">
         <div>
-          <h2 className="font-serif text-2xl font-bold text-foreground mb-2">Applications</h2>
+          <h2 className="font-serif text-2xl font-bold text-foreground mb-2">Online Applications</h2>
           <p className="text-muted-foreground">Manage student admission applications</p>
         </div>
         <Button onClick={handleExport}>
           <Download className="w-4 h-4 mr-2" />
-          Export CSV
+          Export All CSV
         </Button>
       </div>
 
@@ -255,7 +354,21 @@ const ApplicationsList = ({ staffId }: ApplicationsListProps) => {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-border bg-muted/50">
-                    <th className="text-left py-3 px-4 font-medium text-muted-foreground">Student</th>
+<th className="w-12">
+  <Checkbox
+    checked={selectAll}
+    onCheckedChange={(checked) => {
+      setSelectAll(checked as boolean);
+      if (checked) {
+        setSelectedApps(paginatedApps.map(app => app.id));
+      } else {
+        setSelectedApps([]);
+      }
+    }}
+    aria-label="Select all"
+  />
+</th>
+<th className="text-left py-3 px-4 font-medium text-muted-foreground">Student</th>
                     <th className="text-left py-3 px-4 font-medium text-muted-foreground">Class</th>
                     <th className="text-left py-3 px-4 font-medium text-muted-foreground">Type</th>
                     <th className="text-left py-3 px-4 font-medium text-muted-foreground">Parent Contact</th>
@@ -265,8 +378,21 @@ const ApplicationsList = ({ staffId }: ApplicationsListProps) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {paginatedApps.map((app) => (
+{paginatedApps.map((app) => (
                     <tr key={app.id} className="border-b border-border hover:bg-muted/50">
+                      <td className="w-12 p-3">
+                        <Checkbox
+                          checked={selectedApps.includes(app.id)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setSelectedApps([...selectedApps, app.id]);
+                            } else {
+                              setSelectedApps(selectedApps.filter(id => id !== app.id));
+                            }
+                          }}
+                          aria-label={`Select ${app.student_first_name}`}
+                        />
+                      </td>
                       <td className="py-3 px-4">
                         <div>
                           <p className="font-medium">{app.student_first_name} {app.student_last_name}</p>
@@ -296,6 +422,37 @@ const ApplicationsList = ({ staffId }: ApplicationsListProps) => {
                           onClick={() => handleViewDetails(app)}
                         >
                           <Eye className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setEditingApp(app);
+                            editForm.reset({
+                              student_first_name: app.student_first_name,
+                              student_last_name: app.student_last_name,
+                              student_date_of_birth: app.student_date_of_birth,
+                              student_gender: app.student_gender,
+                              student_religion: app.student_religion || '',
+                              class_level: app.class_level,
+                              student_type: app.student_type,
+                              parent_name: app.parent_name,
+                              parent_email: app.parent_email,
+                              parent_phone: app.parent_phone,
+                              parent_relationship: app.parent_relationship,
+                              parent_address: app.parent_address,
+                              parent_occupation: app.parent_occupation || '',
+                              previous_school_name: app.previous_school_name || '',
+                              previous_school_class: app.previous_school_class || '',
+                              previous_school_leaving_reason: app.previous_school_leaving_reason || '',
+                              emergency_contact_name: app.emergency_contact_name,
+                              emergency_contact_phone: app.emergency_contact_phone,
+                              emergency_contact_relationship: app.emergency_contact_relationship,
+                            });
+                            setIsEditOpen(true);
+                          }}
+                        >
+                          <Edit3 className="w-4 h-4" />
                         </Button>
                       </td>
                     </tr>
@@ -334,6 +491,59 @@ const ApplicationsList = ({ staffId }: ApplicationsListProps) => {
         </div>
       )}
 
+      {/* Edit Application Modal */}
+      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-serif">Edit Application</DialogTitle>
+          </DialogHeader>
+          {editingApp && (
+            <Form {...editForm}>
+              <form onSubmit={editForm.handleSubmit(async (data) => {
+                const updateData: Database['public']['Tables']['applications']['Update'] = {
+                  ...data,
+                  updated_at: new Date().toISOString(),
+                  reviewed_by: staffId,
+                };
+                const { error } = await supabase
+                  .from('applications')
+                  .update(updateData)
+                  .eq('id', editingApp.id);
+                if (error) {
+                  toast({ title: "Error", description: error.message, variant: "destructive" });
+                } else {
+                  toast({ title: "Application Updated" });
+                  fetchApplications();
+                  setIsEditOpen(false);
+                  setEditingApp(null);
+                }
+              })} className="space-y-6">
+                {/* Student Info */}
+                <section>
+                  <h3 className="font-semibold mb-4">Student Information</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField control={editForm.control} name="student_first_name" render={({ field }) => (
+                      <FormItem><FormLabel>First Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <FormField control={editForm.control} name="student_last_name" render={({ field }) => (
+                      <FormItem><FormLabel>Last Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <FormField control={editForm.control} name="student_date_of_birth" render={({ field }) => (
+                      <FormItem><FormLabel>Date of Birth</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <FormField control={editForm.control} name="student_gender" render={({ field }) => (
+                      <FormItem><FormLabel>Gender</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="male">Male</SelectItem><SelectItem value="female">Female</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+                    )} />
+                    {/* Add more fields similarly... */}
+                  </div>
+                </section>
+                <Button type="submit" className="w-full">Save Changes</Button>
+              </form>
+            </Form>
+          )}
+        </DialogContent>
+      </Dialog>
+
       {/* Application Details Modal */}
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
@@ -345,6 +555,30 @@ const ApplicationsList = ({ staffId }: ApplicationsListProps) => {
           
           {selectedApp && (
             <div className="space-y-6">
+              {/* Documents Section */}
+              <section>
+                <h3 className="font-semibold mb-3">Documents</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {selectedApp.birth_certificate_url && (
+                    <Button variant="outline" onClick={() => window.open(selectedApp.birth_certificate_url!, '_blank')}>
+                      <DownloadCloud className="w-4 h-4 mr-2" />
+                      Birth Certificate
+                    </Button>
+                  )}
+                  {selectedApp.passport_photo_url && (
+                    <Button variant="outline" onClick={() => window.open(selectedApp.passport_photo_url!, '_blank')}>
+                      <DownloadCloud className="w-4 h-4 mr-2" />
+                      Passport Photo
+                    </Button>
+                  )}
+                  {selectedApp.previous_results_url && (
+                    <Button variant="outline" onClick={() => window.open(selectedApp.previous_results_url!, '_blank')}>
+                      <DownloadCloud className="w-4 h-4 mr-2" />
+                      Previous Results
+                    </Button>
+                  )}
+                </div>
+              </section>
               {/* Status Update */}
               <div className="flex items-center gap-4 p-4 bg-muted rounded-lg">
                 <span className="text-sm font-medium">Update Status:</span>

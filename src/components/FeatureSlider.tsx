@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AnimatedSection from "./AnimatedSection";
-import trip1 from "@/assets/trip-1.jpg";
+// import trip1 from "@/assets/trip-1.jpg";
 import trip2 from "@/assets/trip-2.jpg";
 import trip3 from "@/assets/trip-3.jpg";
 import sports1 from "@/assets/sports-1.jpg";
@@ -18,7 +18,7 @@ const slides = [
     highlight: "Established on the foundation of knowledge and faith",
   },
   {
-    image: trip1,
+    image: trip2,
     title: "Quality Education",
     subtitle: "From S.1 to S.6",
     description: "Our comprehensive curriculum covers both day and boarding programs, preparing students for academic success.",

@@ -7,6 +7,7 @@ import { Loader2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Form,
   FormControl,
@@ -47,29 +48,33 @@ const Auth = () => {
 
   const onLogin = async (data: LoginFormData) => {
     setIsLoading(true);
-    
-    // Simulate a small delay for UX
-    await new Promise(resolve => setTimeout(resolve, 500));
 
-    if (data.email.toLowerCase() === ADMIN_EMAIL && data.password === ADMIN_PASSWORD) {
-      localStorage.setItem("admin_logged_in", "true");
-      localStorage.setItem("admin_email", data.email);
-      localStorage.setItem("admin_name", "Super Admin");
-      
-      toast({
-        title: "Login Successful",
-        description: "Welcome, Super Admin!",
-      });
-      
-      navigate("/admin");
-    } else {
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+      email: data.email,
+      password: data.password,
+    });
+
+    if (authError || !authData.session) {
       toast({
         title: "Login Failed",
-        description: "Invalid email or password",
+        description: authError?.message || "Invalid email or password",
         variant: "destructive",
       });
+      setIsLoading(false);
+      return;
     }
-    
+
+    // Logged in successfully via Supabase auth
+    localStorage.setItem("admin_logged_in", "true");
+    localStorage.setItem("admin_email", data.email);
+    localStorage.setItem("admin_name", "Super Admin");
+
+    toast({
+      title: "Login Successful",
+      description: "Welcome, Super Admin!",
+    });
+
+    navigate("/admin");
     setIsLoading(false);
   };
 

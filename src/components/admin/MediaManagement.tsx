@@ -142,16 +142,16 @@ const MediaManagement = () => {
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
       const filePath = `${newMedia.category}/${fileName}`;
 
-      // Upload to storage
+      // Upload to storage (must match bucket policy in Supabase)
       const { error: uploadError } = await supabase.storage
-        .from('site-media')
+        .from('content-media')
         .upload(filePath, newMedia.file);
 
       if (uploadError) throw uploadError;
 
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
-        .from('site-media')
+        .from('content-media')
         .getPublicUrl(filePath);
 
       // Save to database
@@ -218,7 +218,7 @@ const MediaManagement = () => {
     const filePath = urlParts[1];
 
     if (filePath) {
-      await supabase.storage.from('site-media').remove([decodeURIComponent(filePath)]);
+      await supabase.storage.from('content-media').remove([decodeURIComponent(filePath)]);
     }
 
     const { error } = await supabase

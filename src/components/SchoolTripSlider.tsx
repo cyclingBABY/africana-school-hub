@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, Map } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AnimatedSection from "./AnimatedSection";
 import { useSiteMedia } from "@/hooks/useSiteMedia";
-import trip1 from "@/assets/trip-1.jpg";
+// import trip1 from "@/assets/trip-1.jpg";
 import trip2 from "@/assets/trip-2.jpg";
 import trip3 from "@/assets/trip-3.jpg";
 import trip6 from "@/assets/trip-6.jpg";
@@ -15,7 +15,7 @@ const fallbackImages = [
     caption: "Educational Excursions",
   },
   {
-    src: trip1,
+    src: trip6,
     alt: "Students exploring and learning outside the classroom",
     caption: "Learning Beyond the Classroom",
   },

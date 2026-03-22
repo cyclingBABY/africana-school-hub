@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import AnimatedSection from "./AnimatedSection";
 import reqReligious from "@/assets/req-religious.jpg";
 import reqClothing from "@/assets/req-clothing.jpg";
-import reqBedding from "@/assets/req-bedding.jpg";
+// import reqBedding from "@/assets/req-bedding.jpg";
 import reqHygiene from "@/assets/req-hygiene.jpg";
 import reqEssentials from "@/assets/req-essentials.jpg";
 
@@ -35,7 +35,7 @@ const RequirementsSection = () => {
     {
       icon: BedDouble,
       title: "Bedding",
-      image: reqBedding,
+      image: reqEssentials,
       items: [
         "Mattress",
         "Suitcase",
